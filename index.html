@@ -1,0 +1,2044 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitor USP - Dashboard Interativo</title>
+  <style>
+    :root {
+      --bg-body: #f0f2f5;
+      --bg-header: #003063;
+      --text-header: #ffffff;
+      --bg-coluna: #ffffff;
+      --text-main: #333333;
+      --border-color: #e2e8f0;
+      --border-header: #003063;
+      --bg-item-hover: #f8fafc;
+      --link-color: #003063;
+      --text-muted: #64748b;
+      --bg-count: #e2e8f0;
+      --text-count: #334155;
+      --bg-busca: #ffffff;
+      --cat-oficial: #003063;
+      --cat-externo: #e65100;
+      --cat-ciencia: #00796b;
+      --cat-pessoal: #7c3aed;
+      --jornal-bg: #f0f4fa;
+      --jornal-header-bg: #e8eef8;
+      --jornal-border: #003063;
+      --jornal-img-radius: 6px;
+      --col-width: 300px;
+      --item-padding-v: 10px;
+      --item-padding-h: 14px;
+      --font-size-link: 13px;
+      --font-size-meta: 11px;
+      --col-max-height: 75vh;
+    }
+
+    body.dark-theme {
+      --bg-body: #0d1117;
+      --bg-header: #161b22;
+      --text-header: #f1f5f9;
+      --bg-coluna: #161b22;
+      --text-main: #e2e8f0;
+      --border-color: #30363d;
+      --border-header: #30363d;
+      --bg-item-hover: #21262d;
+      --link-color: #58a6ff;
+      --text-muted: #8b949e;
+      --bg-count: #21262d;
+      --text-count: #8b949e;
+      --bg-busca: #161b22;
+      --cat-oficial: #58a6ff;
+      --cat-externo: #ff9800;
+      --cat-ciencia: #4db6ac;
+      --cat-pessoal: #c084fc;
+      --jornal-bg: #0d1f33;
+      --jornal-header-bg: #112240;
+      --jornal-border: #58a6ff;
+    }
+
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: var(--bg-body); margin: 0; color: var(--text-main); transition: background-color 0.3s, color 0.3s; }
+
+    header { background-color: var(--bg-header); color: var(--text-header); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; transition: background-color 0.3s; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    header h1 { margin: 0; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; letter-spacing: -0.01em; }
+
+    .header-monitor { display: flex; align-items: center; gap: 6px; font-size: 11px; color: rgba(255,255,255,0.55); flex: 1; padding: 0 20px; }
+    .monitor-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; flex-shrink: 0; box-shadow: 0 0 0 0 rgba(74,222,128,0.5); }
+    .monitor-dot.pulsando { animation: pulse-dot 1s ease-in-out infinite; }
+    .monitor-dot.carregando { background: #fbbf24; animation: pulse-dot 0.6s ease-in-out infinite; }
+    .monitor-dot.erro { background: #f87171; animation: none; }
+    @keyframes pulse-dot {
+      0%   { box-shadow: 0 0 0 0 rgba(74,222,128,0.5); }
+      70%  { box-shadow: 0 0 0 6px rgba(74,222,128,0); }
+      100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+    }
+    .monitor-status { color: rgba(255,255,255,0.7); font-weight: 500; }
+    .monitor-sep { opacity: 0.3; }
+    .monitor-countdown { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+
+    .btn-header-icon {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: var(--text-header);
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      transition: background 0.2s, transform 0.3s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .btn-header-icon:hover { background: rgba(255,255,255,0.18); }
+    .btn-header-icon.girando { animation: girar 0.8s linear; }
+    .btn-header-icon.notif-ativo { background: rgba(251,191,36,0.3); border-color: rgba(251,191,36,0.6); }
+    .btn-header-icon.notif-negado { opacity: 0.4; cursor: not-allowed; }
+    @keyframes girar { to { transform: rotate(360deg); } }
+
+    .col-status-icon { font-size: 10px; margin-left: 4px; opacity: 0.7; cursor: pointer; transition: opacity 0.2s; }
+    .col-status-icon:hover { opacity: 1; }
+
+    .btn-col-refresh, .btn-marcar-lidos {
+      background: none; border: none; color: var(--text-muted); font-size: 13px; cursor: pointer; padding: 0 3px; border-radius: 3px; line-height: 1; opacity: 0; transition: opacity 0.2s, color 0.15s, transform 0.3s;
+    }
+    .coluna-header:hover .btn-col-refresh,
+    .coluna-header:hover .btn-marcar-lidos { opacity: 0.7; }
+    .btn-col-refresh:hover, .btn-marcar-lidos:hover { opacity: 1 !important; color: var(--link-color); }
+    .btn-col-refresh.girando { animation: girar 0.7s linear; }
+
+    .badge-novo { display: inline-block; background: #22c55e; color: #fff; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 10px; margin-left: 5px; letter-spacing: 0.02em; animation: fade-in-badge 0.4s ease; }
+    .badge-nao-lido { display: inline-block; background: #3b82f6; color: #fff; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 10px; margin-left: 4px; letter-spacing: 0.02em; }
+    @keyframes fade-in-badge {
+      from { opacity: 0; transform: scale(0.7); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .coluna.atualizando .coluna-body { opacity: 0.5; transition: opacity 0.3s; }
+    .coluna .coluna-body { transition: opacity 0.3s; }
+
+    .btn-theme { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); color: var(--text-header); padding: 5px 11px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: background 0.2s; }
+    .btn-theme:hover { background: rgba(255,255,255,0.16); }
+
+    .btn-config { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); color: var(--text-header); padding: 5px 11px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: background 0.2s; display: flex; align-items: center; gap: 5px; }
+    .btn-config:hover  { background: rgba(255,255,255,0.16); }
+    .btn-config.aberto { background: rgba(255,255,255,0.22); }
+
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+
+    .config-panel { background: var(--bg-busca); border-bottom: 1px solid var(--border-color); overflow: hidden; max-height: 0; transition: max-height 0.3s ease, padding 0.3s ease; padding: 0 20px; }
+    .config-panel.aberto { max-height: 380px; padding: 14px 20px; }
+    .config-inner { display: flex; flex-wrap: wrap; gap: 20px 36px; align-items: flex-start; }
+    .config-color-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .config-color-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-main); cursor: pointer; user-select: none; }
+    .config-color-item span { font-size: 11px; color: var(--text-muted); }
+    input[type=color].cor-picker { width: 30px; height: 22px; padding: 0 2px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--bg-body); cursor: pointer; }
+    input[type=color].cor-picker::-webkit-color-swatch-wrapper { padding: 0; }
+    input[type=color].cor-picker::-webkit-color-swatch { border: none; border-radius: 3px; }
+    .config-grupo { display: flex; flex-direction: column; gap: 7px; }
+    .config-grupo label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .config-opcoes { display: flex; gap: 5px; align-items: center; }
+    .config-btn { padding: 4px 11px; border-radius: 5px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-muted); font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+    .config-btn:hover  { border-color: var(--link-color); color: var(--link-color); }
+    .config-btn.ativo  { background: var(--link-color); color: #fff; border-color: var(--link-color); }
+    .config-slider-wrap { display: flex; align-items: center; gap: 8px; }
+    .config-slider-wrap span { font-size: 11px; color: var(--text-muted); width: 44px; text-align: right; }
+    input[type=range].config-range { -webkit-appearance: none; appearance: none; width: 140px; height: 4px; border-radius: 2px; background: var(--border-color); outline: none; cursor: pointer; }
+    input[type=range].config-range::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--link-color); cursor: pointer; }
+    .config-reset { margin-left: auto; font-size: 11px; color: var(--text-muted); background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 4px; transition: color 0.15s, background 0.15s; font-family: inherit; align-self: flex-end; }
+    .config-reset:hover { color: var(--cat-externo); background: rgba(230,81,0,0.07); }
+
+    .busca-bar { background: var(--bg-busca); border-bottom: 1px solid var(--border-color); padding: 8px 20px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; transition: background-color 0.3s; }
+    .busca-bar label { font-size: 12px; font-weight: 600; color: var(--link-color); white-space: nowrap; }
+    .busca-bar input { flex: 1; min-width: 160px; max-width: 320px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-main); border-radius: 5px; padding: 5px 10px; font-size: 13px; outline: none; transition: border-color 0.2s; font-family: inherit; }
+    .busca-bar input:focus { border-color: var(--link-color); }
+    .busca-bar button { background: var(--border-header); color: #fff; border: none; border-radius: 5px; padding: 5px 14px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; font-family: inherit; }
+    .busca-bar button:hover { opacity: 0.85; }
+    .btn-limpar { background: transparent !important; color: var(--text-muted) !important; border: 1px solid var(--border-color) !important; font-weight: normal !important; }
+
+    .bar-sep { width: 1px; height: 18px; background: var(--border-color); flex-shrink: 0; margin: 0 2px; }
+
+    .date-btn { font-size: 11px; padding: 4px 9px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-muted); cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap; }
+    .date-btn:hover { border-color: var(--link-color); color: var(--link-color); }
+    .date-btn.ativo { background: var(--link-color); color: #fff; border-color: var(--link-color); }
+
+    .btn-copiar-link { font-size: 11px; padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-muted); cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap; }
+    .btn-copiar-link:hover { border-color: var(--link-color); color: var(--link-color); }
+    .btn-copiar-link.copiado { background: #22c55e; color: #fff; border-color: #22c55e; }
+
+    .resultado-bar { display: none; background: #fffbe6; border-bottom: 1px solid #ffe082; padding: 8px 24px; font-size: 13px; color: #7a6000; gap: 8px; align-items: center; }
+    body.dark-theme .resultado-bar { background: #332b00; border-color: #665600; color: #ffeb82; }
+    .resultado-bar.visivel { display: flex; }
+    .resultado-bar strong { background: rgba(0,0,0,0.05); padding: 1px 8px; border-radius: 4px; }
+
+    .colunas-wrapper { position: relative; }
+    .colunas { display: flex; gap: 12px; padding: 12px; align-items: flex-start; overflow-x: auto; min-height: 80vh; }
+    .scroll-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 20; width: 36px; height: 64px; border: none; border-radius: 8px; background: var(--bg-card); box-shadow: 0 2px 10px rgba(0,0,0,0.18); color: var(--text-main); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s, box-shadow 0.15s; }
+    .scroll-arrow:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
+    .scroll-arrow.visivel { opacity: 1; pointer-events: auto; }
+    .scroll-arrow-esq { left: 4px; }
+    .scroll-arrow-dir { right: 4px; }
+
+    .coluna { flex: 0 0 var(--col-width); width: var(--col-width); background: var(--bg-coluna); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04); overflow: hidden; transition: background-color 0.3s, box-shadow 0.2s; position: relative; }
+
+    .coluna.tipo-oficial { border-top: 4px solid var(--cat-oficial); }
+    .coluna.tipo-oficial .coluna-header h2 { color: var(--cat-oficial); }
+    .coluna.tipo-externo { border-top: 4px solid var(--cat-externo); }
+    .coluna.tipo-externo .coluna-header h2 { color: var(--cat-externo); }
+    .coluna.tipo-ciencia { border-top: 4px solid var(--cat-ciencia); }
+    .coluna.tipo-ciencia .coluna-header h2 { color: var(--cat-ciencia); }
+    .coluna.tipo-favoritos { border-top: 4px solid #d97706; }
+    .coluna.tipo-favoritos .coluna-header h2 { color: #d97706; }
+    body.dark-theme .coluna.tipo-favoritos .coluna-header h2 { color: #fbbf24; }
+    .coluna.tipo-pessoal { border-top: 4px solid var(--cat-pessoal); }
+    .coluna.tipo-pessoal .coluna-header h2 { color: var(--cat-pessoal); }
+    /* Minimize */
+    .coluna.minimized .coluna-body { display: none; }
+    .btn-minimizar { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 11px; padding: 0 2px; opacity: 0.35; transition: opacity 0.15s, transform 0.2s; line-height:1; }
+    .coluna-header:hover .btn-minimizar { opacity: 0.7; }
+    .btn-minimizar:hover { opacity: 1 !important; color: var(--link-color); }
+    .coluna.minimized .btn-minimizar { transform: rotate(180deg); }
+
+    .coluna.jornal-usp { background: var(--jornal-bg); border-top: 4px solid var(--jornal-border); }
+    .coluna.jornal-usp .coluna-header { background: var(--jornal-header-bg); }
+    .coluna.jornal-usp .coluna-header h2 { color: var(--jornal-border); }
+    .coluna.jornal-usp .item { border-bottom: 1px solid rgba(0,48,99,0.12); }
+    body.dark-theme .coluna.jornal-usp .item { border-bottom: 1px solid rgba(56,189,248,0.12); }
+    .coluna.jornal-usp .item .jornal-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: var(--jornal-img-radius); margin-bottom: 8px; display: block; }
+    .coluna.jornal-usp .item:hover { background: rgba(0,48,99,0.05); }
+    body.dark-theme .coluna.jornal-usp .item:hover { background: rgba(56,189,248,0.07); }
+
+    .coluna.dragging { opacity: 0.5; transform: scale(0.98); border: 2px dashed var(--link-color); }
+    .coluna.drag-over { border-left: 4px solid var(--link-color); }
+
+    .coluna-header { padding: 10px 13px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; cursor: grab; user-select: none; }
+    .coluna-header:active { cursor: grabbing; }
+    .coluna-header h2 { margin: 0; font-size: 12px; pointer-events: none; font-weight: 700; letter-spacing: 0.01em; text-transform: uppercase; }
+    .coluna-count { font-size: 10px; background: var(--bg-count); color: var(--text-count); padding: 2px 7px; border-radius: 20px; font-weight: 700; pointer-events: none; }
+    .coluna-body { max-height: var(--col-max-height); overflow-y: auto; overflow-x: hidden; }
+
+    .resize-handle { position: absolute; top: 0; right: 0; width: 5px; height: 100%; cursor: col-resize; z-index: 10; transition: background 0.15s; }
+    .resize-handle:hover, .resize-handle.resizing { background: var(--link-color); opacity: 0.5; }
+
+    @keyframes entrarCard { from { opacity:0; transform:translateY(7px); } to { opacity:1; transform:translateY(0); } }
+    .item { padding: var(--item-padding-v) var(--item-padding-h); border-bottom: 1px solid var(--border-color); position: relative; transition: background 0.12s, transform 0.18s, box-shadow 0.18s; animation: entrarCard 0.22s ease-out both; }
+    .item:hover { background: var(--bg-item-hover); transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.10); z-index: 1; }
+    body.dark-theme .item:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
+    .item:last-child { border-bottom: none; }
+    .item.oculto { display: none; }
+
+    .item a { font-weight: 600; color: var(--link-color); text-decoration: none; font-size: var(--font-size-link); display: block; margin-bottom: 3px; line-height: 1.4; padding-right: 20px; }
+    .item a:hover { text-decoration: underline; }
+    .item img { width: 100%; border-radius: 4px; margin-bottom: 5px; }
+    .item .data  { font-size: var(--font-size-meta); color: var(--text-muted); }
+    .item .fonte { display: inline-block; font-size: 10px; color: var(--text-muted); background: var(--bg-busca); border: 1px solid var(--border-color); border-radius: 10px; padding: 1px 7px; margin-top: 4px; margin-right: 4px; }
+
+    /* READ/UNREAD */
+    .item-lido { opacity: 0.6; }
+    .item-lido > a { font-weight: 500 !important; }
+
+    /* STAR BUTTON */
+    .btn-star { position: absolute; top: 7px; right: 7px; background: none; border: none; color: var(--text-muted); font-size: 15px; cursor: pointer; padding: 1px 3px; border-radius: 3px; line-height: 1; opacity: 0; transition: opacity 0.15s, color 0.15s; }
+    .item:hover .btn-star { opacity: 0.5; }
+    .btn-star:hover { opacity: 1 !important; color: #f59e0b !important; }
+    .btn-star.ativo { opacity: 1 !important; color: #f59e0b !important; }
+
+    /* FAVORITES SOURCE TAG */
+    .fav-fonte-tag { display: inline-block; font-size: 9px; background: var(--bg-count); color: var(--text-count); padding: 1px 6px; border-radius: 3px; margin-top: 3px; font-weight: 600; letter-spacing: 0.03em; }
+
+    /* CACHE WARNING */
+    .cache-aviso { background: #fffbe6; border-bottom: 1px solid #ffe082; padding: 6px 14px; font-size: 11px; color: #92700a; display: flex; align-items: center; gap: 5px; }
+    body.dark-theme .cache-aviso { background: #2a2000; border-color: #554800; color: #d4aa40; }
+
+    /* DUPLICATE */
+    .item-duplicata { border-left: 3px solid #94a3b8; padding-left: calc(var(--item-padding-h) - 3px); }
+    .dup-info { font-size: 9px; color: #94a3b8; margin-top: 2px; }
+    .item-duplicata.oculto-dup { display: none !important; }
+
+    /* DEDUP BUTTON */
+    .btn-dedup { font-size: 11px; padding: 3px 9px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-muted); cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap; margin-left: auto; }
+    .btn-dedup:hover { border-color: var(--link-color); color: var(--link-color); }
+    .btn-dedup.ativo { background: #64748b; color: #fff; border-color: transparent; }
+
+    mark { background: #ffeb3b; color: #000; border-radius: 2px; padding: 0 2px; }
+    .coluna.col-oculta { display: none; }
+
+    .toggle-bar { background: var(--bg-busca); border-bottom: 1px solid var(--border-color); padding: 7px 20px; display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; cursor: grab; transition: background-color 0.3s; }
+    .toggle-bar:active { cursor: grabbing; }
+    .toggle-bar::-webkit-scrollbar { display: none; }
+    .colunas::-webkit-scrollbar { height: 6px; }
+    .colunas::-webkit-scrollbar-track { background: transparent; }
+    .colunas::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+    .toggle-bar label { font-size: 11px; font-weight: 700; color: var(--text-muted); white-space: nowrap; margin-right: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .refresh-bar { height: 2px; background: var(--border-color); overflow: hidden; }
+    .refresh-bar-fill { height: 100%; width: 0%; background: var(--link-color); transition: width 1s linear; opacity: 0.6; }
+
+    .toggle-col-btn { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 9px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-muted); cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s, opacity 0.15s; user-select: none; font-family: inherit; font-weight: 500; }
+    .toggle-col-btn.ativo { background: var(--border-header); color: #fff; border-color: transparent; opacity: 1; }
+    .toggle-col-btn.ativo.tipo-externo  { background: var(--cat-externo); }
+    .toggle-col-btn.ativo.tipo-ciencia  { background: var(--cat-ciencia); }
+    .toggle-col-btn.ativo.tipo-oficial  { background: var(--cat-oficial); }
+    .toggle-col-btn.ativo.tipo-favoritos { background: #d97706; }
+    .toggle-col-btn.ativo.tipo-pessoal  { background: var(--cat-pessoal); }
+    .toggle-col-btn:not(.ativo) { opacity: 0.45; }
+    .toggle-col-btn:hover { opacity: 1; }
+    .toggle-col-btn { cursor: grab; }
+    .toggle-col-btn:active { cursor: grabbing; }
+    .toggle-col-btn.dragging-btn { opacity: 0.3 !important; outline: 2px dashed var(--link-color); }
+    .toggle-col-btn.drag-over-btn { outline: 2px solid var(--link-color); opacity: 1 !important; }
+
+    .estado { padding: 20px 16px; font-size: 13px; color: var(--text-muted); text-align: center; }
+    .sem-resultado { display: none; padding: 16px; font-size: 13px; color: var(--text-muted); text-align: center; }
+    .sem-resultado.visivel { display: block; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(10px); background: #1e293b; color: #f8fafc; padding: 8px 18px; border-radius: 6px; font-size: 12px; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s; z-index: 9999; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    body.dark-theme .toast { background: #f8fafc; color: #1e293b; }
+    .toast.visivel { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>📡 Monitor USP</h1>
+    <div class="header-monitor">
+      <span class="monitor-dot" id="monitor-dot"></span>
+      <span class="monitor-status" id="monitor-status">Inicializando...</span>
+      <span class="monitor-sep">·</span>
+      <span class="monitor-countdown" id="monitor-countdown"></span>
+    </div>
+    <div class="header-actions">
+      <button id="btn-refresh-all" class="btn-header-icon" onclick="refreshManual()" title="Atualizar tudo agora (R)">↻</button>
+      <button id="btn-notif" class="btn-header-icon" onclick="toggleNotificacoes()" title="Ativar notificações">🔕</button>
+      <button id="theme-toggle" class="btn-theme">🌙 Escuro</button>
+      <button id="btn-config" class="btn-config" onclick="toggleConfig()">⚙️ Layout</button>
+    </div>
+  </header>
+
+  <div class="config-panel" id="config-panel">
+    <div class="config-inner">
+      <div class="config-grupo">
+        <label>Densidade</label>
+        <div class="config-opcoes">
+          <button class="config-btn" data-config="densidade" data-val="compacto" onclick="aplicarConfig(this)">Compacto</button>
+          <button class="config-btn ativo" data-config="densidade" data-val="normal" onclick="aplicarConfig(this)">Normal</button>
+          <button class="config-btn" data-config="densidade" data-val="espaçoso" onclick="aplicarConfig(this)">Espaçoso</button>
+        </div>
+      </div>
+      <div class="config-grupo">
+        <label>Fonte</label>
+        <div class="config-opcoes">
+          <button class="config-btn" data-config="fonte" data-val="P" onclick="aplicarConfig(this)" style="font-size:11px">P</button>
+          <button class="config-btn ativo" data-config="fonte" data-val="M" onclick="aplicarConfig(this)" style="font-size:13px">M</button>
+          <button class="config-btn" data-config="fonte" data-val="G" onclick="aplicarConfig(this)" style="font-size:15px">G</button>
+        </div>
+      </div>
+      <div class="config-grupo">
+        <label>Largura das colunas</label>
+        <div class="config-slider-wrap">
+          <input type="range" class="config-range" id="slider-largura" min="220" max="520" step="20" value="300" oninput="aplicarLargura(this.value)">
+          <span id="label-largura">300px</span>
+        </div>
+      </div>
+      <div class="config-grupo">
+        <label>Altura máxima</label>
+        <div class="config-slider-wrap">
+          <input type="range" class="config-range" id="slider-altura" min="40" max="95" step="5" value="75" oninput="aplicarAltura(this.value)">
+          <span id="label-altura">75vh</span>
+        </div>
+      </div>
+      <div class="config-grupo config-grupo-cores">
+        <label>Cores das categorias</label>
+        <div class="config-color-row">
+          <label class="config-color-item" title="Cor dos canais oficiais USP">
+            <input type="color" class="cor-picker" id="cor-oficial" value="#003063" oninput="aoMudarCor('oficial',this.value)">
+            <span>Oficial</span>
+          </label>
+          <label class="config-color-item" title="Cor das fontes externas">
+            <input type="color" class="cor-picker" id="cor-externo" value="#e65100" oninput="aoMudarCor('externo',this.value)">
+            <span>Externo</span>
+          </label>
+          <label class="config-color-item" title="Cor das colunas de ciência">
+            <input type="color" class="cor-picker" id="cor-ciencia" value="#00796b" oninput="aoMudarCor('ciencia',this.value)">
+            <span>Ciência</span>
+          </label>
+          <label class="config-color-item" title="Cor das colunas pessoais">
+            <input type="color" class="cor-picker" id="cor-pessoal" value="#7c3aed" oninput="aoMudarCor('pessoal',this.value)">
+            <span>Pessoal</span>
+          </label>
+          <button class="config-reset" onclick="resetarCores()" style="margin-left:2px; align-self:center;" title="Restaurar cores padrão">↺ Cores</button>
+        </div>
+      </div>
+      <button class="config-reset" onclick="resetarConfig()">↺ Restaurar padrões</button>
+    </div>
+  </div>
+
+  <div class="busca-bar">
+    <label>🔍 Filtrar:</label>
+    <input type="text" id="campo-busca" placeholder="Palavra-chave e Enter... (atalho: /)" />
+    <button onclick="aplicarFiltros()">Buscar</button>
+    <button class="btn-limpar" onclick="limpar()">✕ Limpar</button>
+    <div class="bar-sep"></div>
+    <button class="date-btn ativo" data-date="todos"  onclick="setDateFilter(this)">Todos</button>
+    <button class="date-btn"       data-date="hoje"   onclick="setDateFilter(this)">Hoje</button>
+    <button class="date-btn"       data-date="7d"     onclick="setDateFilter(this)">7 dias</button>
+    <button class="date-btn"       data-date="30d"    onclick="setDateFilter(this)">30 dias</button>
+    <div class="bar-sep"></div>
+    <button class="btn-copiar-link" id="btn-copiar-link" onclick="copiarLink()">🔗 Copiar link</button>
+  </div>
+
+  <div class="resultado-bar" id="resultado-bar">
+    Filtrando: <strong id="termo-exibido"></strong>
+    <span id="contagem-resultados"></span>
+  </div>
+
+  <div class="toggle-bar" id="toggle-bar">
+    <label>📋 Colunas:</label>
+    <button class="toggle-col-btn tipo-favoritos ativo" data-col="col-favoritos" onclick="toggleColuna(this)">⭐ Favoritos</button>
+    <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-rss"       onclick="toggleColuna(this)">🗞️ Jornal USP</button>
+    <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-bsky"      onclick="toggleColuna(this)">🦋 Bluesky</button>
+    <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-yt"        onclick="toggleColuna(this)">▶️ YouTube</button>
+    <button class="toggle-col-btn tipo-pessoal ativo"   data-col="col-teses"     onclick="toggleColuna(this)">🎓 Teses USP</button>
+    <button class="toggle-col-btn tipo-pessoal ativo"   data-col="col-obitos"    onclick="toggleColuna(this)">🕯️ Óbitos USP</button>
+    <button class="toggle-col-btn tipo-externo ativo"   data-col="col-alerts"    onclick="toggleColuna(this)">🔔 Google Alerts</button>
+    <button class="toggle-col-btn tipo-externo ativo"   data-col="col-reddit"    onclick="toggleColuna(this)">💬 Reddit</button>
+    <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-fapesp"    onclick="toggleColuna(this)">🔬 FAPESP</button>
+    <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-openalex"  onclick="toggleColuna(this)">🔭 OpenAlex</button>
+    <button class="toggle-col-btn tipo-externo ativo"   data-col="col-agencia"   onclick="toggleColuna(this)">📡 Agência Brasil</button>
+    <button class="btn-dedup" id="btn-dedup" onclick="toggleDedup()">⇄ Ocultar duplicatas</button>
+  </div>
+  <div class="refresh-bar"><div class="refresh-bar-fill" id="refresh-bar-fill"></div></div>
+
+  <div class="colunas-wrapper">
+  <button class="scroll-arrow scroll-arrow-esq" id="scroll-esq" aria-label="Rolar para esquerda">&#8592;</button>
+  <button class="scroll-arrow scroll-arrow-dir" id="scroll-dir" aria-label="Rolar para direita">&#8594;</button>
+  <div class="colunas" id="colunas-container">
+
+    <div class="coluna tipo-favoritos" id="col-favoritos" draggable="true">
+      <div class="resize-handle"></div>
+      <div class="coluna-header">
+        <h2>⭐ Favoritos <span class="col-status-icon" id="status-col-favoritos"></span></h2>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-favoritos')" title="Marcar todos como lidos">✓</button>
+          <span class="coluna-count" id="count-favoritos">—</span>
+        </div>
+      </div>
+      <div class="coluna-body">
+        <div id="favoritos-container" class="estado">Nenhum favorito ainda.<br><small style="opacity:0.6">Clique em ★ em qualquer item.</small></div>
+        <div id="sem-favoritos" class="sem-resultado">Nenhum resultado.</div>
+      </div>
+    </div>
+
+    <div class="coluna tipo-oficial jornal-usp" id="col-rss" draggable="true">
+      <div class="resize-handle"></div>
+      <div class="coluna-header">
+        <h2>🗞️ Jornal da USP <span class="col-status-icon" id="status-col-rss"></span></h2>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-rss')" title="Marcar todos como lidos">✓</button>
+          <button class="btn-col-refresh" id="refresh-col-rss" onclick="refreshColuna('col-rss')" title="Atualizar coluna">↻</button>
+          <span class="badge-nao-lido" id="nao-lidos-col-rss" style="display:none"></span>
+          <span class="coluna-count" id="count-rss">—</span>
+        </div>
+      </div>
+      <div class="coluna-body">
+        <div id="rss-container" class="estado">Carregando...</div>
+        <div id="sem-rss" class="sem-resultado">Nenhum resultado.</div>
+      </div>
+    </div>
+
+    <div class="coluna tipo-oficial" id="col-bsky" draggable="true">
+      <div class="resize-handle"></div>
+      <div class="coluna-header">
+        <h2>🦋 Bluesky <span class="col-status-icon" id="status-col-bsky"></span></h2>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-bsky')" title="Marcar todos como lidos">✓</button>
+          <button class="btn-col-refresh" id="refresh-col-bsky" onclick="refreshColuna('col-bsky')" title="Atualizar coluna">↻</button>
+          <span class="badge-nao-lido" id="nao-lidos-col-bsky" style="display:none"></span>
+          <span class="coluna-count" id="count-bsky">—</span>
+        </div>
+      </div>
+      <div class="coluna-body">
+        <div id="bsky-container" class="estado">Carregando...</div>
+        <div id="sem-bsky" class="sem-resultado">Nenhum resultado.</div>
+      </div>
+    </div>
+
+    <div class="coluna tipo-oficial" id="col-yt" draggable="true">
+      <div class="resize-handle"></div>
+      <div class="coluna-header">
+        <h2>▶️ YouTube <span class="col-status-icon" id="status-col-yt"></span></h2>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-yt')" title="Marcar todos como lidos">✓</button>
+          <button class="btn-col-refresh" id="refresh-col-yt" onclick="refreshColuna('col-yt')" title="Atualizar coluna">↻</button>
+          <span class="badge-nao-lido" id="nao-lidos-col-yt" style="display:none"></span>
+          <span class="coluna-count" id="count-yt">—</span>
+        </div>
+      </div>
+      <div class="coluna-body">
+        <div id="youtube-container" class="estado">Carregando...</div>
+        <div id="sem-yt" class="sem-resultado">Nenhum resultado.</div>
+      </div>
+    </div>
+
+    <div class="coluna tipo-pessoal" id="col-teses" draggable="true">
+      <div class="resize-handle"></div>
+      <div class="coluna-header">
+        <h2>🎓 Teses USP <span class="col-status-icon" id="status-col-teses"></span></h2>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-teses')" title="Marcar todos como lidos">✓</button>
+          <button class="btn-col-refresh" id="refresh-col-teses" onclick="refreshColuna('col-teses')" title="Atualizar coluna">↻</button>
+          <span class="badge-nao-lido" id="nao-lidos-col-teses" style="display:none"></span>
+          <span class="coluna-count" id="count-teses">—</span>
+        </div>
+      </div>
+      <div class="coluna-body">
+        <div id="teses-container" class="estado">Carregando...</div>
+        <div id="sem-teses" class="sem-resultado">Nenhum resultado.</div>
+      </div>
+    </div>
+
+    <div class="coluna tipo-externo" id="col-alerts" draggable="true">
+      <div class="resize-handle"></div>
+      <div class="coluna-header">
+        <h2>🔔 Google Alerts <span class="col-status-icon" id="status-col-alerts"></span></h2>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-alerts')" title="Marcar todos como lidos">✓</button>
+          <button class="btn-col-refresh" id="refresh-col-alerts" onclick="refreshColuna('col-alerts')" title="Atualizar coluna">↻</button>
+          <span class="badge-nao-lido" id="nao-lidos-col-alerts" style="display:none"></span>
+          <span class="coluna-count" id="count-alerts">—</span>
+        </div>
+      </div>
+      <div class="coluna-body">
+        <div id="alerts-container" class="estado">Carregando...</div>
+        <div id="sem-alerts" class="sem-resultado">Nenhum resultado.</div>
+      </div>
+    </div>
+
+    <div class="coluna tipo-externo" id="col-reddit" draggable="true">
+      <div class="resize-handle"></div>
+      <div class="coluna-header">
+        <h2>💬 Reddit (r/USP) <span class="col-status-icon" id="status-col-reddit"></span></h2>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-reddit')" title="Marcar todos como lidos">✓</button>
+          <button class="btn-col-refresh" id="refresh-col-reddit" onclick="refreshColuna('col-reddit')" title="Atualizar coluna">↻</button>
+          <span class="badge-nao-lido" id="nao-lidos-col-reddit" style="display:none"></span>
+          <span class="coluna-count" id="count-reddit">—</span>
+        </div>
+      </div>
+      <div class="coluna-body">
+        <div id="reddit-container" class="estado">Carregando...</div>
+        <div id="sem-reddit" class="sem-resultado">Nenhum resultado.</div>
+      </div>
+    </div>
+
+    <div class="coluna tipo-ciencia" id="col-fapesp" draggable="true">
+      <div class="resize-handle"></div>
+      <div class="coluna-header">
+        <h2>🔬 Agência FAPESP <span class="col-status-icon" id="status-col-fapesp"></span></h2>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-fapesp')" title="Marcar todos como lidos">✓</button>
+          <button class="btn-col-refresh" id="refresh-col-fapesp" onclick="refreshColuna('col-fapesp')" title="Atualizar coluna">↻</button>
+          <span class="badge-nao-lido" id="nao-lidos-col-fapesp" style="display:none"></span>
+          <span class="coluna-count" id="count-fapesp">—</span>
+        </div>
+      </div>
+      <div class="coluna-body">
+        <div id="fapesp-container" class="estado">Carregando...</div>
+        <div id="sem-fapesp" class="sem-resultado">Nenhum resultado.</div>
+      </div>
+    </div>
+
+    <div class="coluna tipo-ciencia" id="col-openalex" draggable="true">
+      <div class="resize-handle"></div>
+      <div class="coluna-header">
+        <h2>🔭 OpenAlex — USP <span class="col-status-icon" id="status-col-openalex"></span></h2>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-openalex')" title="Marcar todos como lidos">✓</button>
+          <button class="btn-col-refresh" id="refresh-col-openalex" onclick="refreshColuna('col-openalex')" title="Atualizar coluna">↻</button>
+          <span class="badge-nao-lido" id="nao-lidos-col-openalex" style="display:none"></span>
+          <span class="coluna-count" id="count-openalex">—</span>
+        </div>
+      </div>
+      <div class="coluna-body">
+        <div id="openalex-container" class="estado">Carregando...</div>
+        <div id="sem-openalex" class="sem-resultado">Nenhum resultado.</div>
+      </div>
+    <div class="coluna tipo-pessoal" id="col-obitos" draggable="true">
+      <div class="resize-handle"></div>
+      <div class="coluna-header">
+        <h2>🕯️ Óbitos USP <span class="col-status-icon" id="status-col-obitos"></span></h2>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-obitos')" title="Marcar todos como lidos">✓</button>
+          <button class="btn-col-refresh" id="refresh-col-obitos" onclick="refreshColuna('col-obitos')" title="Atualizar coluna">↻</button>
+          <span class="badge-nao-lido" id="nao-lidos-col-obitos" style="display:none"></span>
+          <span class="coluna-count" id="count-obitos">—</span>
+        </div>
+      </div>
+      <div class="coluna-body">
+        <div id="obitos-container" class="estado">Carregando...</div>
+        <div id="sem-obitos" class="sem-resultado">Nenhum resultado.</div>
+      </div>
+    </div>
+
+    <div class="coluna tipo-externo" id="col-agencia" draggable="true">
+      <div class="resize-handle"></div>
+      <div class="coluna-header">
+        <h2>📡 Agência Brasil <span class="col-status-icon" id="status-col-agencia"></span></h2>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-agencia')" title="Marcar todos como lidos">✓</button>
+          <button class="btn-col-refresh" id="refresh-col-agencia" onclick="refreshColuna('col-agencia')" title="Atualizar coluna">↻</button>
+          <span class="badge-nao-lido" id="nao-lidos-col-agencia" style="display:none"></span>
+          <span class="coluna-count" id="count-agencia">—</span>
+        </div>
+      </div>
+      <div class="coluna-body">
+        <div id="agencia-container" class="estado">Carregando...</div>
+        <div id="sem-agencia" class="sem-resultado">Nenhum resultado.</div>
+      </div>
+    </div>
+
+    </div>
+
+  </div><!-- /colunas -->
+  </div><!-- /colunas-wrapper -->
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ==============================
+    // CONFIGURAÇÕES E APIS
+    // ==============================
+    const PROXY       = "https://script.google.com/macros/s/AKfycbyV2j9g8KfbdoUKz5O16n6G7EWsoluJ1H3oFwnngugt_MQ_03Wfa52wV-EnEpUzIzqp/exec";
+    const RSS_JORNAL  = "https://jornal.usp.br/feed/";
+    const RSS_FAPESP  = "https://agencia.fapesp.br/rss";
+    const RSS_ALERTS  = "https://www.google.com/alerts/feeds/02947877249843560141/10910834947331316113";
+    const YOUTUBE_KEY = "AIzaSyDD3X-8tZH972BSgTHeE55i0403WpZWlx4";
+    const YOUTUBE_CH  = "UCN1ihdoKXeixzYi7Hyp4WwQ";
+    const BSKY_HANDLE    = "uspoficial.bsky.social";
+    const RSS_REDDIT     = "https://www.reddit.com/r/usp/.rss";
+    const RSS_OBITOS     = "https://news.google.com/rss/search?q=(falecimento+OR+obituário+OR+faleceu+OR+%22nota+de+falecimento%22)+(USP+OR+%22Universidade+de+São+Paulo%22)&hl=pt-BR&gl=BR&ceid=BR:pt-419";
+    const RSS_AGENCIA    = "https://agenciabrasil.ebc.com.br/rss/educacao/feed.xml";
+    const COLUNAS = [
+      { container: "favoritos-container", sem: "sem-favoritos", count: "count-favoritos", colId: "col-favoritos", local: true,  fn: renderizarFavoritos },
+      { container: "alerts-container",    sem: "sem-alerts",    count: "count-alerts",    colId: "col-alerts",   local: false, fn: () => carregarRSS(RSS_ALERTS, "alerts-container",  "count-alerts",  20, "col-alerts")  },
+      { container: "rss-container",       sem: "sem-rss",       count: "count-rss",       colId: "col-rss",      local: false, fn: () => carregarJornalUSP()    },
+      { container: "bsky-container",      sem: "sem-bsky",      count: "count-bsky",      colId: "col-bsky",     local: false, fn: () => carregarBluesky()      },
+      { container: "youtube-container",   sem: "sem-yt",        count: "count-yt",        colId: "col-yt",       local: false, fn: () => carregarYouTube()      },
+      { container: "fapesp-container",    sem: "sem-fapesp",    count: "count-fapesp",    colId: "col-fapesp",   local: false, fn: () => carregarRSS(RSS_FAPESP,  "fapesp-container",  "count-fapesp",  20, "col-fapesp")  },
+      { container: "openalex-container",  sem: "sem-openalex",  count: "count-openalex",  colId: "col-openalex", local: false, fn: () => carregarOpenAlex()     },
+      { container: "reddit-container",    sem: "sem-reddit",    count: "count-reddit",    colId: "col-reddit",   local: false, fn: () => carregarRSS(RSS_REDDIT,  "reddit-container",  "count-reddit",  20, "col-reddit")  },
+      { container: "teses-container",     sem: "sem-teses",     count: "count-teses",     colId: "col-teses",    local: false, fn: () => carregarTesesUSP()     },
+      { container: "obitos-container",    sem: "sem-obitos",    count: "count-obitos",    colId: "col-obitos",   local: false, fn: () => carregarRSS(RSS_OBITOS,  "obitos-container",  "count-obitos",  30, "col-obitos")   },
+      { container: "agencia-container",   sem: "sem-agencia",   count: "count-agencia",   colId: "col-agencia",  local: false, fn: () => carregarRSS(RSS_AGENCIA, "agencia-container", "count-agencia", 25, "col-agencia")  },
+    ];
+
+    // Nome legível de cada coluna
+    const NOME_COL = {
+      'col-rss': 'Jornal USP', 'col-bsky': 'Bluesky', 'col-yt': 'YouTube',
+      'col-alerts': 'Google Alerts', 'col-reddit': 'Reddit',
+      'col-fapesp': 'FAPESP', 'col-openalex': 'OpenAlex',
+      'col-teses': 'Teses USP', 'col-obitos': 'Óbitos USP', 'col-agencia': 'Agência Brasil', 'col-favoritos': 'Favoritos'
+    };
+
+    // ==============================
+    // ESTADO GLOBAL
+    // ==============================
+    let lidosSet        = new Set();
+    let favoritosArr    = [];
+    let dateFilter      = 'todos';
+    let ocultarDups     = false;
+    let primeiroLoad    = true;
+    let itemsConhecidos = {}; // { colId: Set<string> }
+
+    // ==============================
+    // TOAST
+    // ==============================
+    let toastTimer;
+    function showToast(msg, duration = 2200) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('visivel');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('visivel'), duration);
+    }
+
+    // ==============================
+    // HELPER: CRIAR ITEM DOM
+    // ==============================
+    function criarItem({ titulo, link, isodate, imgUrl, isJornal = false, colId, extraHtml = '', sourceColId }) {
+      const key     = (link || titulo || '').trim();
+      const lido    = lidosSet.has(key);
+      const fav     = estaFavorito(key);
+      const realCol = sourceColId || colId; // coluna original (usado no toggle favorito)
+
+      const div = document.createElement('div');
+      div.className = 'item' + (lido ? ' item-lido' : '');
+      div.dataset.texto   = (titulo + ' ' + (extraHtml || '')).toLowerCase().replace(/<[^>]*>/g, '');
+      div.dataset.titulo  = titulo;
+      div.dataset.link    = link || '';
+      div.dataset.key     = key;
+      div.dataset.isodate = isodate || '';
+      div.dataset.col     = colId;
+
+      if (imgUrl) {
+        const img = document.createElement('img');
+        if (isJornal) img.className = 'jornal-img';
+        img.src = imgUrl; img.alt = ''; img.loading = 'lazy';
+        img.onerror = () => img.style.display = 'none';
+        div.appendChild(img);
+      }
+
+      const anchor = document.createElement('a');
+      anchor.href = link || '#'; anchor.target = '_blank'; anchor.rel = 'noopener';
+      anchor.textContent = titulo || '(sem título)';
+      if (key) anchor.addEventListener('click', () => marcarLido(key, div));
+      div.appendChild(anchor);
+
+      if (isodate) {
+        const dataDiv = document.createElement('div');
+        dataDiv.className = 'data';
+        try {
+          const d = new Date(isodate);
+          const data = d.toLocaleDateString('pt-BR');
+          const hora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+          dataDiv.textContent = hora !== 'Invalid Date' && !isodate.match(/^\d{4}$/) ? `${data} ${hora}` : data;
+        } catch(e) {}
+        div.appendChild(dataDiv);
+      }
+
+      if (extraHtml) {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = extraHtml;
+        while (tmp.firstChild) div.appendChild(tmp.firstChild);
+      }
+
+      const star = document.createElement('button');
+      star.className = 'btn-star' + (fav ? ' ativo' : '');
+      star.dataset.favKey = key;
+      star.title = fav ? 'Remover dos favoritos' : 'Salvar nos favoritos';
+      star.textContent = '★';
+      star.addEventListener('click', e => {
+        e.preventDefault(); e.stopPropagation();
+        toggleFavorito(key, star, div, { titulo, link, isodate, imgUrl, isJornal, colId: realCol, extraHtml });
+      });
+      div.appendChild(star);
+
+      return div;
+    }
+
+    // ==============================
+    // SISTEMA DE LIDOS
+    // ==============================
+    function inicializarLidos() {
+      try {
+        const raw = localStorage.getItem('monitor-usp-lidos');
+        lidosSet = new Set(raw ? JSON.parse(raw) : []);
+      } catch(e) { lidosSet = new Set(); }
+    }
+
+    function estaLido(key) { return lidosSet.has(key); }
+
+    function marcarLido(key, el) {
+      if (!key || lidosSet.has(key)) return;
+      lidosSet.add(key);
+      try { localStorage.setItem('monitor-usp-lidos', JSON.stringify([...lidosSet])); } catch(e) {}
+      if (el) el.classList.add('item-lido');
+      // atualizar badge da coluna
+      const colId = el?.dataset?.col;
+      if (colId) atualizarBadgeNaoLidos(colId);
+    }
+
+    function marcarTodosLidos(colId) {
+      const colDef = COLUNAS.find(c => c.colId === colId);
+      if (!colDef) return;
+      document.querySelectorAll(`#${colDef.container} .item`).forEach(el => {
+        const key = el.dataset.key;
+        if (key) { lidosSet.add(key); el.classList.add('item-lido'); }
+      });
+      try { localStorage.setItem('monitor-usp-lidos', JSON.stringify([...lidosSet])); } catch(e) {}
+      atualizarBadgeNaoLidos(colId);
+      showToast('Todos marcados como lidos ✓');
+    }
+
+    function atualizarBadgeNaoLidos(colId) {
+      const colDef = COLUNAS.find(c => c.colId === colId);
+      if (!colDef) return;
+      const badge = document.getElementById(`nao-lidos-${colId}`);
+      if (!badge) return;
+      const items = document.querySelectorAll(`#${colDef.container} .item`);
+      const naoLidos = [...items].filter(el => !lidosSet.has(el.dataset.key)).length;
+      badge.textContent = naoLidos;
+      badge.style.display = naoLidos > 0 ? 'inline-block' : 'none';
+    }
+
+    // ==============================
+    // SISTEMA DE FAVORITOS
+    // ==============================
+    function inicializarFavoritos() {
+      try {
+        const raw = localStorage.getItem('monitor-usp-favoritos');
+        favoritosArr = raw ? JSON.parse(raw) : [];
+      } catch(e) { favoritosArr = []; }
+    }
+
+    function estaFavorito(key) {
+      return favoritosArr.some(f => (f.link || f.titulo || '').trim() === key);
+    }
+
+    function salvarFavoritos() {
+      try { localStorage.setItem('monitor-usp-favoritos', JSON.stringify(favoritosArr)); } catch(e) {}
+    }
+
+    function toggleFavorito(key, starBtn, itemEl, itemData) {
+      if (estaFavorito(key)) {
+        favoritosArr = favoritosArr.filter(f => (f.link || f.titulo || '').trim() !== key);
+        salvarFavoritos();
+        document.querySelectorAll('.btn-star').forEach(btn => {
+          if (btn.dataset.favKey === key) {
+            btn.classList.remove('ativo');
+            btn.title = 'Salvar nos favoritos';
+          }
+        });
+        renderizarFavoritos();
+        showToast('Removido dos favoritos');
+      } else {
+        favoritosArr.push({ ...itemData, savedAt: new Date().toISOString() });
+        salvarFavoritos();
+        document.querySelectorAll('.btn-star').forEach(btn => {
+          if (btn.dataset.favKey === key) {
+            btn.classList.add('ativo');
+            btn.title = 'Remover dos favoritos';
+          }
+        });
+        renderizarFavoritos();
+        showToast('Salvo nos favoritos ★');
+      }
+    }
+
+    function renderizarFavoritos() {
+      const container = document.getElementById('favoritos-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (favoritosArr.length === 0) {
+        container.innerHTML = '<div class="estado">Nenhum favorito ainda.<br><small style="opacity:0.6">Clique em ★ em qualquer item.</small></div>';
+        document.getElementById('count-favoritos').textContent = '—';
+        return;
+      }
+
+      [...favoritosArr].reverse().forEach(saved => {
+        const div = criarItem({ ...saved, colId: 'col-favoritos', sourceColId: saved.colId });
+        if (saved.colId && NOME_COL[saved.colId]) {
+          const tag = document.createElement('div');
+          tag.className = 'fav-fonte-tag';
+          tag.textContent = NOME_COL[saved.colId];
+          div.appendChild(tag);
+        }
+        container.appendChild(div);
+      });
+
+      document.getElementById('count-favoritos').textContent = favoritosArr.length;
+    }
+
+    // ==============================
+    // SISTEMA DE CACHE
+    // ==============================
+    function salvarCache(colId, items) {
+      try { localStorage.setItem(`monitor-usp-cache-${colId}`, JSON.stringify({ ts: Date.now(), items })); } catch(e) {}
+    }
+
+    function carregarCache(colId) {
+      try {
+        const raw = localStorage.getItem(`monitor-usp-cache-${colId}`);
+        if (!raw) return null;
+        const cache = JSON.parse(raw);
+        // Cache válido por 24h
+        if (Date.now() - cache.ts > 24 * 60 * 60 * 1000) return null;
+        return cache;
+      } catch(e) { return null; }
+    }
+
+    function mostrarAvisoCache(container, ts) {
+      const aviso = document.createElement('div');
+      aviso.className = 'cache-aviso';
+      const hora = new Date(ts).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      aviso.innerHTML = `⚠ Dados em cache de ${hora} — sem conexão com a fonte`;
+      container.appendChild(aviso);
+    }
+
+    // ==============================
+    // SISTEMA DE NOTIFICAÇÕES
+    // ==============================
+    function inicializarNotifs() {
+      COLUNAS.forEach(col => {
+        try {
+          const raw = localStorage.getItem(`monitor-usp-vistos-${col.colId}`);
+          itemsConhecidos[col.colId] = new Set(raw ? JSON.parse(raw) : []);
+        } catch(e) {
+          itemsConhecidos[col.colId] = new Set();
+        }
+      });
+      atualizarBotaoNotif();
+    }
+
+    function atualizarBotaoNotif() {
+      const btn = document.getElementById('btn-notif');
+      if (!('Notification' in window)) { btn.style.display = 'none'; return; }
+      if (Notification.permission === 'granted') {
+        btn.textContent = '🔔'; btn.title = 'Notificações ativas'; btn.classList.add('notif-ativo'); btn.classList.remove('notif-negado');
+      } else if (Notification.permission === 'denied') {
+        btn.textContent = '🔇'; btn.title = 'Notificações bloqueadas no navegador'; btn.classList.add('notif-negado'); btn.classList.remove('notif-ativo');
+      } else {
+        btn.textContent = '🔕'; btn.title = 'Clique para ativar notificações'; btn.classList.remove('notif-ativo', 'notif-negado');
+      }
+    }
+
+    async function toggleNotificacoes() {
+      if (!('Notification' in window)) { showToast('Notificações não suportadas neste navegador'); return; }
+      if (Notification.permission === 'denied') { showToast('Notificações bloqueadas — desbloqueie nas configurações do navegador'); return; }
+      if (Notification.permission === 'granted') { showToast('Notificações já estão ativas 🔔'); return; }
+      const perm = await Notification.requestPermission();
+      atualizarBotaoNotif();
+      if (perm === 'granted') showToast('Notificações ativadas! 🔔');
+      else showToast('Permissão negada');
+    }
+
+    function notificarNovos(colId, links) {
+      const set = itemsConhecidos[colId];
+      if (!set) return;
+
+      if (set.size === 0) {
+        // Primeiro carregamento: popula sem notificar
+        links.forEach(l => set.add(l));
+      } else {
+        const novos = links.filter(l => !set.has(l));
+        links.forEach(l => set.add(l));
+        if (novos.length > 0 && !primeiroLoad && Notification.permission === 'granted') {
+          const nome = NOME_COL[colId] || colId;
+          new Notification(`Monitor USP — ${nome}`, {
+            body: `${novos.length} novo${novos.length > 1 ? 's itens' : ' item'}: ${novos[0].slice(0, 80)}`,
+            tag: `monitor-usp-${colId}`
+          });
+        }
+        links.forEach(l => set.add(l));
+      }
+
+      try { localStorage.setItem(`monitor-usp-vistos-${colId}`, JSON.stringify([...set])); } catch(e) {}
+    }
+
+    // ==============================
+    // SISTEMA DE DEDUPLICAÇÃO
+    // ==============================
+    function normalizarTitulo(str) {
+      return (str || '').toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim().slice(0, 80);
+    }
+
+    function detectarDuplicatas() {
+      // Limpar marcações anteriores
+      document.querySelectorAll('.item-duplicata').forEach(el => {
+        el.classList.remove('item-duplicata');
+        el.querySelector('.dup-info')?.remove();
+      });
+
+      const mapaOcorrencias = new Map(); // normalizedTitle → [{el, colId}]
+
+      COLUNAS.filter(c => !c.local || c.colId === 'col-favoritos').forEach(col => {
+        document.querySelectorAll(`#${col.container} .item`).forEach(el => {
+          const norm = normalizarTitulo(el.dataset.titulo);
+          if (!norm || norm.length < 15) return;
+          if (!mapaOcorrencias.has(norm)) mapaOcorrencias.set(norm, []);
+          mapaOcorrencias.get(norm).push({ el, colId: col.colId });
+        });
+      });
+
+      mapaOcorrencias.forEach(ocorrencias => {
+        if (ocorrencias.length < 2) return;
+        const colIds = [...new Set(ocorrencias.map(o => o.colId))];
+        if (colIds.length < 2) return; // só duplicata se em colunas DIFERENTES
+        ocorrencias.forEach(({ el, colId }) => {
+          el.classList.add('item-duplicata');
+          if (ocultarDups) el.classList.add('oculto-dup');
+          if (!el.querySelector('.dup-info')) {
+            const info = document.createElement('div');
+            info.className = 'dup-info';
+            const outras = colIds.filter(c => c !== colId).map(c => NOME_COL[c] || c).join(', ');
+            info.textContent = `⇄ Também em: ${outras}`;
+            el.appendChild(info);
+          }
+        });
+      });
+    }
+
+    function toggleDedup() {
+      ocultarDups = !ocultarDups;
+      const btn = document.getElementById('btn-dedup');
+      btn.classList.toggle('ativo', ocultarDups);
+      btn.textContent = ocultarDups ? '⇄ Mostrar duplicatas' : '⇄ Ocultar duplicatas';
+      document.querySelectorAll('.item-duplicata').forEach(el => el.classList.toggle('oculto-dup', ocultarDups));
+      try { localStorage.setItem('monitor-usp-dedup', ocultarDups ? '1' : '0'); } catch(e) {}
+      aplicarFiltros();
+    }
+
+    // ==============================
+    // FILTRO POR DATA
+    // ==============================
+    function setDateFilter(btn) {
+      document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('ativo'));
+      btn.classList.add('ativo');
+      dateFilter = btn.dataset.date;
+      aplicarFiltros();
+      atualizarURL();
+    }
+
+    // ==============================
+    // URL STATE (LINK COMPARTILHÁVEL)
+    // ==============================
+    function atualizarURL() {
+      const state = {};
+      const q = document.getElementById('campo-busca').value.trim();
+      if (q) state.q = q;
+      if (dateFilter !== 'todos') state.date = dateFilter;
+      const ocultas = [...document.querySelectorAll('.toggle-col-btn:not(.ativo)')].map(b => b.dataset.col);
+      if (ocultas.length) state.ocultas = ocultas;
+      const hash = Object.keys(state).length ? '#' + btoa(encodeURIComponent(JSON.stringify(state))) : '';
+      history.replaceState(null, '', window.location.pathname + hash);
+    }
+
+    function restaurarDeURL() {
+      if (!window.location.hash) return;
+      try {
+        const state = JSON.parse(decodeURIComponent(atob(window.location.hash.slice(1))));
+        if (state.q) document.getElementById('campo-busca').value = state.q;
+        if (state.date) {
+          dateFilter = state.date;
+          document.querySelectorAll('.date-btn').forEach(b => {
+            b.classList.toggle('ativo', b.dataset.date === state.date);
+          });
+        }
+        if (state.ocultas?.length) {
+          state.ocultas.forEach(colId => {
+            const col = document.getElementById(colId);
+            const btn = document.querySelector(`.toggle-col-btn[data-col="${colId}"]`);
+            if (col) col.classList.add('col-oculta');
+            if (btn) btn.classList.remove('ativo');
+          });
+        }
+      } catch(e) {}
+    }
+
+    function copiarLink() {
+      atualizarURL();
+      const btn = document.getElementById('btn-copiar-link');
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        btn.textContent = '✓ Copiado!'; btn.classList.add('copiado');
+        setTimeout(() => { btn.textContent = '🔗 Copiar link'; btn.classList.remove('copiado'); }, 2000);
+      }).catch(() => showToast('Não foi possível copiar'));
+    }
+
+    // ==============================
+    // ATALHOS DE TECLADO
+    // ==============================
+    document.addEventListener('keydown', e => {
+      const emInput = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
+      if (e.key === '/' && !emInput) {
+        e.preventDefault();
+        document.getElementById('campo-busca').focus();
+      } else if (e.key === 'Escape') {
+        document.getElementById('campo-busca').blur();
+        if (document.getElementById('config-panel').classList.contains('aberto')) toggleConfig();
+        limpar();
+      } else if ((e.key === 'r' || e.key === 'R') && !emInput && !e.ctrlKey && !e.metaKey) {
+        refreshManual();
+      }
+    });
+
+    // ==============================
+    // THEME (DARK MODE)
+    // ==============================
+    const themeToggle = document.getElementById('theme-toggle');
+    if (localStorage.getItem('monitor-usp-theme') === 'dark') {
+      document.body.classList.add('dark-theme');
+      themeToggle.textContent = '☀️ Modo Claro';
+    }
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-theme');
+      const isDark = document.body.classList.contains('dark-theme');
+      themeToggle.textContent = isDark ? '☀️ Modo Claro' : '🌙 Modo Escuro';
+      localStorage.setItem('monitor-usp-theme', isDark ? 'dark' : 'light');
+      // Atualiza pickers para refletir padrões do novo tema (se não houver cores customizadas)
+      if (!localStorage.getItem(CORES_KEY)) {
+        const padrao = isDark ? CORES_PADRAO_DARK : CORES_PADRAO_LIGHT;
+        Object.entries(padrao).forEach(([k, v]) => {
+          const picker = document.getElementById(`cor-${k}`);
+          if (picker) picker.value = v;
+        });
+      }
+    });
+
+    // ==============================
+    // DRAG AND DROP
+    // ==============================
+    const colunasContainer = document.getElementById('colunas-container');
+    const toggleBar        = document.getElementById('toggle-bar');
+    let draggedColId = null;
+
+    function salvarOrdem() {
+      const ids = [...colunasContainer.querySelectorAll('.coluna')].map(c => c.id);
+      localStorage.setItem('monitor-usp-order', JSON.stringify(ids));
+    }
+
+    function sincronizarToggleBar() {
+      const ordemColunas = [...colunasContainer.querySelectorAll('.coluna')].map(c => c.id);
+      ordemColunas.forEach(colId => {
+        const btn = toggleBar.querySelector(`.toggle-col-btn[data-col="${colId}"]`);
+        if (btn) toggleBar.appendChild(btn);
+      });
+    }
+
+    const savedOrder = localStorage.getItem('monitor-usp-order');
+    if (savedOrder) {
+      JSON.parse(savedOrder).forEach(id => {
+        const col = document.getElementById(id);
+        if (col) colunasContainer.appendChild(col);
+      });
+      sincronizarToggleBar();
+    }
+
+    function setupToggleBtnDrag(btn) {
+      btn.setAttribute('draggable', 'true');
+      btn.addEventListener('dragstart', function(e) {
+        draggedColId = this.dataset.col; e.dataTransfer.effectAllowed = 'move';
+        setTimeout(() => this.classList.add('dragging-btn'), 0);
+      });
+      btn.addEventListener('dragend', function() {
+        this.classList.remove('dragging-btn');
+        document.querySelectorAll('.toggle-col-btn').forEach(b => b.classList.remove('drag-over-btn'));
+        draggedColId = null; salvarOrdem();
+      });
+      btn.addEventListener('dragover', function(e) {
+        e.preventDefault(); if (this.dataset.col !== draggedColId) this.classList.add('drag-over-btn');
+      });
+      btn.addEventListener('dragleave', function() { this.classList.remove('drag-over-btn'); });
+      btn.addEventListener('drop', function(e) {
+        e.preventDefault(); this.classList.remove('drag-over-btn');
+        if (!draggedColId || this.dataset.col === draggedColId) return;
+        const targetColId = this.dataset.col;
+        const draggedCol  = document.getElementById(draggedColId);
+        const targetCol   = document.getElementById(targetColId);
+        const draggedBtn  = toggleBar.querySelector(`.toggle-col-btn[data-col="${draggedColId}"]`);
+        if (!draggedCol || !targetCol || !draggedBtn) return;
+        const allCols = [...colunasContainer.querySelectorAll('.coluna')];
+        const iFrom = allCols.indexOf(draggedCol), iTo = allCols.indexOf(targetCol);
+        if (iFrom < iTo) { targetCol.after(draggedCol); this.after(draggedBtn); }
+        else             { targetCol.before(draggedCol); this.before(draggedBtn); }
+      });
+    }
+
+    document.querySelectorAll('.toggle-col-btn').forEach(setupToggleBtnDrag);
+
+    let draggedColElement = null;
+    document.querySelectorAll('.coluna').forEach(col => {
+      col.addEventListener('dragstart', function(e) {
+        draggedColElement = this; draggedColId = this.id; e.dataTransfer.effectAllowed = 'move';
+        setTimeout(() => this.classList.add('dragging'), 0);
+      });
+      col.addEventListener('dragend', function() {
+        this.classList.remove('dragging');
+        document.querySelectorAll('.coluna').forEach(c => c.classList.remove('drag-over'));
+        draggedColElement = null; draggedColId = null; sincronizarToggleBar(); salvarOrdem();
+      });
+      col.addEventListener('dragover', function(e) {
+        e.preventDefault(); if (this !== draggedColElement) this.classList.add('drag-over');
+      });
+      col.addEventListener('dragleave', function() { this.classList.remove('drag-over'); });
+      col.addEventListener('drop', function(e) {
+        e.preventDefault(); this.classList.remove('drag-over');
+        if (!draggedColElement || this === draggedColElement) return;
+        const allCols = [...colunasContainer.querySelectorAll('.coluna')];
+        const iFrom = allCols.indexOf(draggedColElement), iTo = allCols.indexOf(this);
+        if (iFrom < iTo) this.after(draggedColElement);
+        else             this.before(draggedColElement);
+      });
+    });
+
+    // ==============================
+    // TOGGLE DE COLUNAS
+    // ==============================
+    const TOGGLE_KEY = 'monitor-usp-cols-ocultas';
+
+    function toggleColuna(btn) {
+      const colId = btn.dataset.col;
+      const col   = document.getElementById(colId);
+      if (!col) return;
+      const estaAtivo = btn.classList.contains('ativo');
+      if (estaAtivo) {
+        const ativos = document.querySelectorAll('.toggle-col-btn.ativo').length;
+        if (ativos <= 1) return;
+        col.classList.add('col-oculta'); btn.classList.remove('ativo');
+      } else {
+        col.classList.remove('col-oculta'); btn.classList.add('ativo');
+      }
+      const ocultas = [...document.querySelectorAll('.toggle-col-btn:not(.ativo)')].map(b => b.dataset.col);
+      localStorage.setItem(TOGGLE_KEY, JSON.stringify(ocultas));
+      atualizarURL();
+    }
+
+    const savedOcultas = localStorage.getItem(TOGGLE_KEY);
+    if (savedOcultas) {
+      JSON.parse(savedOcultas).forEach(colId => {
+        const col = document.getElementById(colId);
+        const btn = document.querySelector(`.toggle-col-btn[data-col="${colId}"]`);
+        if (col) col.classList.add('col-oculta');
+        if (btn) btn.classList.remove('ativo');
+      });
+    }
+
+    // ==============================
+    // SISTEMA DE MONITORAMENTO AO VIVO
+    // ==============================
+    const TEMPO_REFRESH = 5 * 60 * 1000;
+    let ultimaAtualizacao = null, proximoRefresh = null, countdownInterval = null;
+    let colStatus = {};
+
+    function setColStatus(colId, status) {
+      colStatus[colId] = status;
+      const suffix = colId.replace('col-', '');
+      const icon = document.getElementById(`status-col-${suffix}`);
+      if (!icon) return;
+      if (status === 'ok')           { icon.textContent = '✓'; icon.style.color = '#4ade80'; icon.title = 'OK'; }
+      else if (status === 'erro')    { icon.textContent = '✕'; icon.style.color = '#f87171'; icon.title = 'Erro'; }
+      else if (status === 'cache')   { icon.textContent = '⚠'; icon.style.color = '#fbbf24'; icon.title = 'Cache'; }
+      else if (status === 'carregando') { icon.textContent = '…'; icon.style.color = '#fbbf24'; icon.title = 'Carregando...'; }
+    }
+
+    function atualizarStatusGlobal(modo) {
+      const dot = document.getElementById('monitor-dot');
+      const status = document.getElementById('monitor-status');
+      if (modo === 'carregando') {
+        dot.className = 'monitor-dot carregando'; status.textContent = 'Atualizando fontes...';
+      } else if (modo === 'ok') {
+        dot.className = 'monitor-dot pulsando';
+        const hora = ultimaAtualizacao?.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) || '';
+        status.textContent = `Monitorando · atualizado às ${hora}`;
+      } else if (modo === 'erro') {
+        dot.className = 'monitor-dot erro'; status.textContent = 'Algumas fontes com erro';
+      }
+    }
+
+    function atualizarContador() {
+      const el = document.getElementById('monitor-countdown');
+      if (!proximoRefresh) { el.textContent = ''; return; }
+      const diff = Math.max(0, Math.round((proximoRefresh - Date.now()) / 1000));
+      const min = String(Math.floor(diff / 60)).padStart(2, '0');
+      const seg = String(diff % 60).padStart(2, '0');
+      el.textContent = `próx. atualização ${min}:${seg}`;
+      // Progress bar: 0% = just refreshed, 100% = next refresh now
+      const bar = document.getElementById('refresh-bar-fill');
+      if (bar) {
+        const elapsed = TEMPO_REFRESH - Math.max(0, proximoRefresh - Date.now());
+        bar.style.width = Math.min(100, (elapsed / TEMPO_REFRESH) * 100) + '%';
+      }
+    }
+
+    function wrapCarregar(colId, fn) {
+      return async function() {
+        if (colId === 'col-favoritos') { fn(); return; }
+        const col = document.getElementById(colId);
+        const btnRefresh = document.getElementById(`refresh-${colId}`);
+        if (col) col.classList.add('atualizando');
+        if (btnRefresh) btnRefresh.classList.add('girando');
+        setColStatus(colId, 'carregando');
+
+        const antes = col?.querySelectorAll('.item').length || 0;
+        try {
+          await fn();
+          const depois = col?.querySelectorAll('.item').length || 0;
+          setColStatus(colId, 'ok');
+          if (antes > 0 && depois > antes) {
+            const novos = depois - antes;
+            const colEl = document.getElementById(colId);
+            colEl?.querySelector('.badge-novo')?.remove();
+            const countEl = colEl?.querySelector('.coluna-count');
+            if (countEl) {
+              const badge = document.createElement('span');
+              badge.className = 'badge-novo';
+              badge.textContent = `+${novos} novo${novos > 1 ? 's' : ''}`;
+              countEl.after(badge);
+              setTimeout(() => badge.remove(), 8000);
+            }
+          }
+        } catch(e) {
+          setColStatus(colId, colStatus[colId] === 'cache' ? 'cache' : 'erro');
+        } finally {
+          if (col) col.classList.remove('atualizando');
+          if (btnRefresh) btnRefresh.classList.remove('girando');
+        }
+      };
+    }
+
+    function refreshColuna(colId) {
+      if (colId === 'col-favoritos') { renderizarFavoritos(); return; }
+      const colDef = COLUNAS.find(c => c.colId === colId);
+      if (colDef) wrapCarregar(colId, colDef.fn)();
+    }
+
+    function refreshManual() {
+      const btn = document.getElementById('btn-refresh-all');
+      btn.classList.add('girando');
+      setTimeout(() => btn.classList.remove('girando'), 800);
+      carregarTodosOsDados();
+    }
+
+    // ==============================
+    // RSS GENÉRICO
+    // ==============================
+    async function carregarRSS(feedUrl, containerId, countId, limite, colId) {
+      const container = document.getElementById(containerId);
+      try {
+        const resp = await fetch(`${PROXY}?feed=${encodeURIComponent(feedUrl)}`);
+        const xmlText = await resp.text();
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(xmlText, "text/xml");
+        const nodeList = xml.querySelectorAll("item").length > 0 ? xml.querySelectorAll("item") : xml.querySelectorAll("entry");
+        const xmlItems = Array.from(nodeList).slice(0, limite);
+
+        if (xmlItems.length === 0) { container.innerHTML = '<div class="estado">Nenhum item encontrado.</div>'; return; }
+
+        const cacheItems = xmlItems.map(item => {
+          const titulo = (item.querySelector("title")?.textContent || "").replace(/<[^>]*>/g, "").trim();
+          let linkEl = item.querySelector("link");
+          const link = (linkEl?.getAttribute("href") || linkEl?.textContent || "").trim();
+          const isodate = item.querySelector("pubDate")?.textContent || item.querySelector("published")?.textContent || item.querySelector("updated")?.textContent || "";
+          const fonte = item.querySelector("source")?.textContent || "";
+          const extraHtml = fonte ? `<div class="fonte">${fonte}</div>` : '';
+          return { titulo, link, isodate, colId, extraHtml };
+        });
+
+        // Sort newest first (handles both RFC 2822 and ISO 8601 date strings)
+        cacheItems.sort((a, b) => {
+          const da = a.isodate ? new Date(a.isodate) : 0;
+          const db = b.isodate ? new Date(b.isodate) : 0;
+          return db - da;
+        });
+
+        container.innerHTML = "";
+        cacheItems.forEach(data => container.appendChild(criarItem(data)));
+
+        document.getElementById(countId).textContent = cacheItems.length;
+        salvarCache(colId, cacheItems);
+        notificarNovos(colId, cacheItems.map(i => i.link || i.titulo));
+        atualizarBadgeNaoLidos(colId);
+      } catch(e) {
+        const cache = carregarCache(colId);
+        if (cache) {
+          container.innerHTML = '';
+          mostrarAvisoCache(container, cache.ts);
+          cache.items.forEach(data => container.appendChild(criarItem({ ...data, colId })));
+          document.getElementById(countId).textContent = cache.items.length;
+          atualizarBadgeNaoLidos(colId);
+          setColStatus(colId, 'cache');
+        } else {
+          container.innerHTML = '<div class="estado">Não foi possível carregar.</div>';
+        }
+        throw e;
+      }
+    }
+
+    // ==============================
+    // JORNAL DA USP (RSS com imagens)
+    // ==============================
+    async function carregarJornalUSP() {
+      const container = document.getElementById("rss-container");
+      const colId = 'col-rss';
+      try {
+        const resp = await fetch(`${PROXY}?feed=${encodeURIComponent(RSS_JORNAL)}`);
+        const xmlText = await resp.text();
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(xmlText, "text/xml");
+        const xmlItems = Array.from(xml.querySelectorAll("item")).slice(0, 20);
+
+        if (xmlItems.length === 0) { container.innerHTML = '<div class="estado">Nenhum item encontrado.</div>'; return; }
+
+        const cacheItems = [];
+        container.innerHTML = "";
+        xmlItems.forEach(item => {
+          const titulo = (item.querySelector("title")?.textContent || "").replace(/<[^>]*>/g, "").trim();
+          let linkEl = item.querySelector("link");
+          const link = (linkEl?.getAttribute("href") || linkEl?.textContent || "").trim();
+          const isodate = item.querySelector("pubDate")?.textContent || "";
+
+          let imgUrl = "";
+          const mediaNS = "http://search.yahoo.com/mrss/";
+          const mc = item.getElementsByTagNameNS(mediaNS, "content")[0];
+          const mt = item.getElementsByTagNameNS(mediaNS, "thumbnail")[0];
+          if (mc?.getAttribute("url")) imgUrl = mc.getAttribute("url");
+          else if (mt?.getAttribute("url")) imgUrl = mt.getAttribute("url");
+          if (!imgUrl) {
+            const enc = item.querySelector("enclosure");
+            if (enc && (enc.getAttribute("type") || "").startsWith("image")) imgUrl = enc.getAttribute("url") || "";
+          }
+          if (!imgUrl) {
+            const content = item.querySelector("encoded")?.textContent || item.querySelector("description")?.textContent || "";
+            const m = content.match(/<img[^>]+src=["']([^"']+)["']/i);
+            if (m) imgUrl = m[1];
+          }
+
+          const data = { titulo, link, isodate, imgUrl, isJornal: true, colId };
+          cacheItems.push(data);
+          container.appendChild(criarItem(data));
+        });
+
+        document.getElementById("count-rss").textContent = cacheItems.length;
+        salvarCache(colId, cacheItems);
+        notificarNovos(colId, cacheItems.map(i => i.link || i.titulo));
+        atualizarBadgeNaoLidos(colId);
+      } catch(e) {
+        const cache = carregarCache(colId);
+        if (cache) {
+          container.innerHTML = '';
+          mostrarAvisoCache(container, cache.ts);
+          cache.items.forEach(data => container.appendChild(criarItem({ ...data, colId })));
+          document.getElementById("count-rss").textContent = cache.items.length;
+          atualizarBadgeNaoLidos(colId);
+          setColStatus(colId, 'cache');
+        } else {
+          container.innerHTML = '<div class="estado">Não foi possível carregar.</div>';
+        }
+        throw e;
+      }
+    }
+
+    // ==============================
+    // BLUESKY
+    // ==============================
+    async function carregarBluesky() {
+      const container = document.getElementById("bsky-container");
+      const colId = 'col-bsky';
+      try {
+        const perfilResp = await fetch(`https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=${BSKY_HANDLE}`);
+        const perfil = await perfilResp.json();
+        const feedResp = await fetch(`https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${perfil.did}&limit=20`);
+        const feed = await feedResp.json();
+
+        if (!feed.feed?.length) { container.innerHTML = '<div class="estado">Nenhum post encontrado.</div>'; return; }
+
+        const cacheItems = [];
+        container.innerHTML = "";
+        feed.feed.forEach(entrada => {
+          const post  = entrada.post;
+          const titulo = post.record?.text || "";
+          const isodate = post.record?.createdAt || "";
+          const uri   = post.uri.replace("at://", "").split("/");
+          const link  = `https://bsky.app/profile/${uri[0]}/post/${uri[2]}`;
+          const data  = { titulo, link, isodate, colId };
+          cacheItems.push(data);
+          container.appendChild(criarItem(data));
+        });
+
+        document.getElementById("count-bsky").textContent = cacheItems.length;
+        salvarCache(colId, cacheItems);
+        notificarNovos(colId, cacheItems.map(i => i.link || i.titulo));
+        atualizarBadgeNaoLidos(colId);
+      } catch(e) {
+        const cache = carregarCache(colId);
+        if (cache) {
+          container.innerHTML = '';
+          mostrarAvisoCache(container, cache.ts);
+          cache.items.forEach(data => container.appendChild(criarItem({ ...data, colId })));
+          document.getElementById("count-bsky").textContent = cache.items.length;
+          atualizarBadgeNaoLidos(colId);
+          setColStatus(colId, 'cache');
+        } else {
+          container.innerHTML = '<div class="estado">Não foi possível carregar o Bluesky.</div>';
+        }
+        throw e;
+      }
+    }
+
+    // ==============================
+    // YOUTUBE
+    // ==============================
+    async function carregarYouTube() {
+      const container = document.getElementById("youtube-container");
+      const colId = 'col-yt';
+      const url = `https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_KEY}&channelId=${YOUTUBE_CH}&part=snippet,id&order=date&maxResults=20&type=video`;
+      try {
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error('API error');
+        const dados = await resp.json();
+        const ytItems = dados.items || [];
+
+        if (!ytItems.length) { container.innerHTML = '<div class="estado">Nenhum vídeo encontrado.</div>'; return; }
+
+        const cacheItems = [];
+        container.innerHTML = "";
+        ytItems.forEach(item => {
+          const titulo  = item.snippet.title;
+          const link    = `https://www.youtube.com/watch?v=${item.id.videoId}`;
+          const isodate = item.snippet.publishedAt || "";
+          const imgUrl  = item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url || "";
+          const data    = { titulo, link, isodate, imgUrl, colId };
+          cacheItems.push(data);
+          container.appendChild(criarItem(data));
+        });
+
+        document.getElementById("count-yt").textContent = cacheItems.length;
+        salvarCache(colId, cacheItems);
+        notificarNovos(colId, cacheItems.map(i => i.link || i.titulo));
+        atualizarBadgeNaoLidos(colId);
+      } catch(e) {
+        const cache = carregarCache(colId);
+        if (cache) {
+          container.innerHTML = '';
+          mostrarAvisoCache(container, cache.ts);
+          cache.items.forEach(data => container.appendChild(criarItem({ ...data, colId })));
+          document.getElementById("count-yt").textContent = cache.items.length;
+          atualizarBadgeNaoLidos(colId);
+          setColStatus(colId, 'cache');
+        } else {
+          container.innerHTML = '<div class="estado">Não foi possível carregar o YouTube.</div>';
+        }
+        throw e;
+      }
+    }
+
+    // ==============================
+    // TESES USP (OAI-PMH)
+    // ==============================
+    const TESES_KEYWORDS = [
+      'urbanismo', 'planejamento urbano', 'cidades', 'planejamento de cidades'
+    ];
+
+    async function carregarTesesUSP() {
+      const container = document.getElementById("teses-container");
+      const colId = 'col-teses';
+
+      // OpenAlex: CORS-free JSON API, USP institution ID I17974374 (same as existing column)
+      // Run one call per keyword in parallel; combine & deduplicate by work ID
+      const USP_ID = 'I17974374';
+      const BASE = 'https://api.openalex.org/works';
+      const PARAMS = `filter=institutions.id:${USP_ID},type:dissertation&sort=publication_date:desc&per-page=25&mailto=monitor-usp@usp.br`;
+
+      try {
+        const settled = await Promise.allSettled(
+          TESES_KEYWORDS.map(kw =>
+            fetch(`${BASE}?${PARAMS}&search=${encodeURIComponent(kw)}`, { headers: { Accept: 'application/json' } })
+              .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+              .then(d => d.results || [])
+          )
+        );
+
+        const seen = new Set();
+        const matches = [];
+
+        settled.forEach(res => {
+          if (res.status !== 'fulfilled') return;
+          res.value.forEach(w => {
+            if (seen.has(w.id)) return;
+            seen.add(w.id);
+
+            const titulo = w.title || '(sem título)';
+            const link   = w.primary_location?.landing_page_url
+                        || (w.doi ? `https://doi.org/${w.doi.replace('https://doi.org/', '')}` : '');
+            const isodate = w.publication_date || (w.publication_year ? `${w.publication_year}-01-01` : '');
+
+            const autores = (w.authorships || [])
+              .map(a => a.author?.display_name).filter(Boolean).slice(0, 2).join(', ');
+            const tipo = (w.type || '').toLowerCase();
+            const tipoLabel = tipo.includes('dissertation') || tipo.includes('thesis') ? 'Tese / Dissertação' : '';
+
+            const extraHtml = [
+              autores   ? `<div class="fonte">👤 ${autores}</div>` : '',
+              tipoLabel ? `<div class="fonte">🎓 ${tipoLabel}</div>` : '',
+            ].join('');
+
+            matches.push({ titulo, link, isodate, extraHtml, colId });
+          });
+        });
+
+        // Newest first; items without date go to the end
+        matches.sort((a, b) => {
+          if (!a.isodate && !b.isodate) return 0;
+          if (!a.isodate) return 1;
+          if (!b.isodate) return -1;
+          return b.isodate.localeCompare(a.isodate);
+        });
+
+        container.innerHTML = '';
+
+        if (!matches.length) {
+          container.innerHTML = `<div class="estado">Nenhuma tese/dissertação encontrada no OpenAlex para os termos configurados.<br>
+            <a href="https://teses.usp.br" target="_blank" style="color:var(--link-color)">🔗 Buscar em Teses USP</a></div>`;
+          document.getElementById('count-teses').textContent = '0';
+          return;
+        }
+
+        const slice = matches.slice(0, 30);
+        slice.forEach(d => container.appendChild(criarItem(d)));
+        document.getElementById('count-teses').textContent = matches.length;
+        salvarCache(colId, slice);
+        notificarNovos(colId, slice.map(i => i.link || i.titulo));
+        atualizarBadgeNaoLidos(colId);
+
+      } catch(e) {
+        const cache = carregarCache(colId);
+        if (cache) {
+          container.innerHTML = '';
+          mostrarAvisoCache(container, cache.ts);
+          cache.items.forEach(d => container.appendChild(criarItem({ ...d, colId })));
+          document.getElementById('count-teses').textContent = cache.items.length;
+          atualizarBadgeNaoLidos(colId);
+          setColStatus(colId, 'cache');
+        } else {
+          container.innerHTML = `<div class="estado">${e.message}<br>
+            <a href="https://teses.usp.br" target="_blank" style="color:var(--link-color)">🔗 Abrir Teses USP</a></div>`;
+        }
+        throw e;
+      }
+    }
+
+    // ==============================
+    // OPENALEX
+    // ==============================
+    async function carregarOpenAlex() {
+      const container = document.getElementById("openalex-container");
+      const colId = 'col-openalex';
+      const url = "https://api.openalex.org/works?filter=institutions.id:I17974374&sort=publication_date:desc&per-page=20&mailto=monitor-usp@usp.br";
+      try {
+        const resp = await fetch(url, { headers: { "Accept": "application/json" } });
+        if (!resp.ok) throw new Error("API indisponível");
+        const dados = await resp.json();
+        const items = dados.results || [];
+
+        if (!items.length) { container.innerHTML = '<div class="estado">Nenhum artigo encontrado.</div>'; return; }
+
+        const cacheItems = [];
+        container.innerHTML = "";
+        items.forEach(item => {
+          const titulo   = item.title || "Título indisponível";
+          const link     = item.doi || item.id || "";
+          const isodate  = item.publication_date || (item.publication_year ? `${item.publication_year}-01-01` : "");
+          const revista  = item.primary_location?.source?.display_name || "";
+          const tipo     = item.type || "";
+          const citacoes = item.cited_by_count != null ? item.cited_by_count : null;
+          const extraHtml = [
+            revista  ? `<div class="fonte">📄 ${revista}</div>` : '',
+            tipo     ? `<div class="fonte">· ${tipo}</div>` : '',
+            citacoes != null ? `<div class="fonte">💬 ${citacoes} citação${citacoes !== 1 ? 's' : ''}</div>` : ''
+          ].join('');
+          const data = { titulo, link, isodate, colId, extraHtml };
+          cacheItems.push(data);
+          container.appendChild(criarItem(data));
+        });
+
+        document.getElementById("count-openalex").textContent = cacheItems.length;
+        salvarCache(colId, cacheItems);
+        notificarNovos(colId, cacheItems.map(i => i.link || i.titulo));
+        atualizarBadgeNaoLidos(colId);
+      } catch(e) {
+        const cache = carregarCache(colId);
+        if (cache) {
+          container.innerHTML = '';
+          mostrarAvisoCache(container, cache.ts);
+          cache.items.forEach(data => container.appendChild(criarItem({ ...data, colId })));
+          document.getElementById("count-openalex").textContent = cache.items.length;
+          atualizarBadgeNaoLidos(colId);
+          setColStatus(colId, 'cache');
+        } else {
+          container.innerHTML = `<div class="estado">Não foi possível carregar.<br><a href="https://openalex.org/institutions/I17974374" target="_blank" style="color:var(--link-color)">🔗 Abrir OpenAlex USP</a></div>`;
+        }
+        throw e;
+      }
+    }
+
+    // ==============================
+    // FILTRO COMBINADO (keyword + data + dedup)
+    // ==============================
+    function escaparRegex(str) { return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+    function destacar(texto, termo) {
+      return texto.replace(new RegExp(`(${escaparRegex(termo)})`, "gi"), "<mark>$1</mark>");
+    }
+
+    function aplicarFiltros() {
+      const termo = document.getElementById("campo-busca").value.trim().toLowerCase();
+      const agora = Date.now();
+      const limiteMs = { hoje: 24*60*60*1000, '7d': 7*24*60*60*1000, '30d': 30*24*60*60*1000 }[dateFilter];
+
+      let totalGeral = 0;
+      COLUNAS.forEach(col => {
+        const itens = document.querySelectorAll(`#${col.container} .item`);
+        let visiveis = 0;
+        itens.forEach(el => {
+          const matchTermo = !termo || el.dataset.texto.includes(termo);
+          let matchData = true;
+          if (limiteMs && el.dataset.isodate) {
+            const ts = new Date(el.dataset.isodate).getTime();
+            matchData = !isNaN(ts) && (agora - ts) <= limiteMs;
+          }
+          const matchDup = !ocultarDups || !el.classList.contains('item-duplicata');
+          const visivel = matchTermo && matchData && matchDup;
+          el.classList.toggle('oculto', !visivel);
+          if (visivel) {
+            visiveis++;
+            const a = el.querySelector('a');
+            if (a && el.dataset.titulo) {
+              if (termo) a.innerHTML = destacar(el.dataset.titulo, termo);
+              else a.textContent = el.dataset.titulo;
+            }
+          }
+        });
+        totalGeral += visiveis;
+        const total = itens.length;
+        const countEl = document.getElementById(col.count);
+        if (countEl) countEl.textContent = total > 0 ? (visiveis < total ? `${visiveis}/${total}` : total) : '—';
+        const semEl = document.getElementById(col.sem);
+        if (semEl) semEl.classList.toggle('visivel', visiveis === 0 && total > 0);
+      });
+
+      const temFiltro = termo || dateFilter !== 'todos';
+      document.getElementById('resultado-bar').classList.toggle('visivel', temFiltro);
+      if (temFiltro) {
+        const parts = [];
+        if (termo) parts.push(`"${termo}"`);
+        if (dateFilter !== 'todos') parts.push({ hoje: 'últimas 24h', '7d': 'últimos 7 dias', '30d': 'últimos 30 dias' }[dateFilter]);
+        document.getElementById('termo-exibido').textContent = parts.join(' + ');
+        document.getElementById('contagem-resultados').textContent = `— ${totalGeral} resultado(s)`;
+      }
+      atualizarURL();
+    }
+
+    function filtrar() { aplicarFiltros(); }
+
+    function limpar() {
+      document.getElementById('campo-busca').value = '';
+      dateFilter = 'todos';
+      document.querySelectorAll('.date-btn').forEach(b => b.classList.toggle('ativo', b.dataset.date === 'todos'));
+      aplicarFiltros();
+    }
+
+    document.getElementById('campo-busca').addEventListener('keydown', e => { if (e.key === 'Enter') aplicarFiltros(); });
+
+    // ==============================
+    // CORES DAS CATEGORIAS
+    // ==============================
+    const CORES_KEY = 'monitor-usp-cores';
+    const CORES_PADRAO_LIGHT = { oficial: '#003063', externo: '#e65100', ciencia: '#00796b', pessoal: '#7c3aed' };
+    const CORES_PADRAO_DARK  = { oficial: '#58a6ff', externo: '#ff9800', ciencia: '#4db6ac', pessoal: '#c084fc' };
+
+    function aplicarCores(cores) {
+      let el = document.getElementById('user-color-overrides');
+      if (!el) {
+        el = document.createElement('style');
+        el.id = 'user-color-overrides';
+        document.head.appendChild(el);
+      }
+      if (!cores || Object.keys(cores).length === 0) { el.textContent = ''; return; }
+      el.textContent = `:root, body.dark-theme {
+        ${cores.oficial ? `--cat-oficial: ${cores.oficial};` : ''}
+        ${cores.externo ? `--cat-externo: ${cores.externo};` : ''}
+        ${cores.ciencia ? `--cat-ciencia: ${cores.ciencia};` : ''}
+        ${cores.pessoal ? `--cat-pessoal: ${cores.pessoal};` : ''}
+      }`;
+    }
+
+    function aoMudarCor(categoria, valor) {
+      const cores = JSON.parse(localStorage.getItem(CORES_KEY) || '{}');
+      cores[categoria] = valor;
+      localStorage.setItem(CORES_KEY, JSON.stringify(cores));
+      aplicarCores(cores);
+    }
+
+    function resetarCores() {
+      localStorage.removeItem(CORES_KEY);
+      aplicarCores(null);
+      const isDark = document.body.classList.contains('dark-theme');
+      const padrao = isDark ? CORES_PADRAO_DARK : CORES_PADRAO_LIGHT;
+      Object.entries(padrao).forEach(([k, v]) => {
+        const picker = document.getElementById(`cor-${k}`);
+        if (picker) picker.value = v;
+      });
+    }
+
+    function carregarCores() {
+      const cores = JSON.parse(localStorage.getItem(CORES_KEY) || 'null');
+      const isDark = document.body.classList.contains('dark-theme');
+      const padrao = isDark ? CORES_PADRAO_DARK : CORES_PADRAO_LIGHT;
+      const efetivas = Object.assign({}, padrao, cores || {});
+      Object.entries(efetivas).forEach(([k, v]) => {
+        const picker = document.getElementById(`cor-${k}`);
+        if (picker) picker.value = v;
+      });
+      if (cores) aplicarCores(cores);
+    }
+
+    // ==============================
+    // PAINEL DE CONFIGURAÇÕES
+    // ==============================
+    const CONFIG_KEY = 'monitor-usp-layout';
+    const DEFAULTS = { densidade: 'normal', fonte: 'M', largura: 300, altura: 75 };
+    const DENSIDADE_MAP = {
+      compacto:  { v: '6px',  h: '10px' },
+      normal:    { v: '10px', h: '14px' },
+      espaçoso:  { v: '15px', h: '18px' }
+    };
+    const FONTE_MAP = {
+      P: { link: '11px', meta: '10px' },
+      M: { link: '13px', meta: '11px' },
+      G: { link: '15px', meta: '12px' }
+    };
+
+    function toggleConfig() {
+      const panel = document.getElementById('config-panel');
+      const btn   = document.getElementById('btn-config');
+      panel.classList.toggle('aberto');
+      btn.classList.toggle('aberto', panel.classList.contains('aberto'));
+    }
+
+    function aplicarConfig(btn) {
+      const grupo = btn.dataset.config, val = btn.dataset.val;
+      document.querySelectorAll(`.config-btn[data-config="${grupo}"]`).forEach(b => b.classList.remove('ativo'));
+      btn.classList.add('ativo');
+      if (grupo === 'densidade') {
+        const d = DENSIDADE_MAP[val];
+        document.documentElement.style.setProperty('--item-padding-v', d.v);
+        document.documentElement.style.setProperty('--item-padding-h', d.h);
+      }
+      if (grupo === 'fonte') {
+        const f = FONTE_MAP[val];
+        document.documentElement.style.setProperty('--font-size-link', f.link);
+        document.documentElement.style.setProperty('--font-size-meta', f.meta);
+      }
+      salvarLayoutConfig();
+    }
+
+    function aplicarLargura(val) {
+      document.documentElement.style.setProperty('--col-width', val + 'px');
+      document.getElementById('label-largura').textContent = val + 'px';
+      salvarLayoutConfig();
+    }
+
+    function aplicarAltura(val) {
+      document.documentElement.style.setProperty('--col-max-height', val + 'vh');
+      document.getElementById('label-altura').textContent = val + 'vh';
+      salvarLayoutConfig();
+    }
+
+    function salvarLayoutConfig() {
+      const cfg = {
+        densidade: document.querySelector('.config-btn[data-config="densidade"].ativo')?.dataset.val || DEFAULTS.densidade,
+        fonte:     document.querySelector('.config-btn[data-config="fonte"].ativo')?.dataset.val     || DEFAULTS.fonte,
+        largura:   parseInt(document.getElementById('slider-largura').value),
+        altura:    parseInt(document.getElementById('slider-altura').value),
+        colWidths: {}
+      };
+      document.querySelectorAll('.coluna').forEach(col => { if (col.style.width) cfg.colWidths[col.id] = col.style.width; });
+      localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg));
+    }
+
+    function resetarConfig() {
+      localStorage.removeItem(CONFIG_KEY);
+      document.querySelectorAll('.coluna').forEach(col => col.style.removeProperty('width'));
+      carregarLayoutConfig(DEFAULTS);
+    }
+
+    function carregarLayoutConfig(cfg) {
+      const btnDens = document.querySelector(`.config-btn[data-config="densidade"][data-val="${cfg.densidade}"]`);
+      if (btnDens) aplicarConfig(btnDens);
+      const btnFonte = document.querySelector(`.config-btn[data-config="fonte"][data-val="${cfg.fonte}"]`);
+      if (btnFonte) aplicarConfig(btnFonte);
+      const sliderL = document.getElementById('slider-largura');
+      sliderL.value = cfg.largura; aplicarLargura(cfg.largura);
+      const sliderA = document.getElementById('slider-altura');
+      sliderA.value = cfg.altura; aplicarAltura(cfg.altura);
+      if (cfg.colWidths) {
+        Object.entries(cfg.colWidths).forEach(([id, w]) => {
+          const col = document.getElementById(id);
+          if (col) { col.style.width = w; col.style.flex = '0 0 ' + w; }
+        });
+      }
+    }
+
+    // ==============================
+    // RESIZE INDIVIDUAL
+    // ==============================
+    document.querySelectorAll('.resize-handle').forEach(handle => {
+      let startX, startW, col;
+      handle.addEventListener('mousedown', e => {
+        col = handle.parentElement; startX = e.clientX; startW = col.offsetWidth;
+        handle.classList.add('resizing');
+        document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none';
+        function onMove(e) {
+          const newW = Math.max(180, Math.min(700, startW + (e.clientX - startX)));
+          col.style.width = newW + 'px'; col.style.flex = '0 0 ' + newW + 'px';
+        }
+        function onUp() {
+          handle.classList.remove('resizing');
+          document.body.style.cursor = ''; document.body.style.userSelect = '';
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+          salvarLayoutConfig();
+        }
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+      });
+    });
+
+    // ==============================
+    // INICIALIZAR E CARREGAR
+    // ==============================
+    async function carregarTodosOsDados() {
+      atualizarStatusGlobal('carregando');
+
+      const colunasRemote = COLUNAS.filter(c => !c.local);
+      await Promise.allSettled(colunasRemote.map(col => wrapCarregar(col.colId, col.fn)()));
+
+      ultimaAtualizacao = new Date();
+      proximoRefresh    = new Date(Date.now() + TEMPO_REFRESH);
+      primeiroLoad      = false;
+
+      const temErro = Object.values(colStatus).some(s => s === 'erro');
+      atualizarStatusGlobal(temErro ? 'erro' : 'ok');
+
+      clearInterval(countdownInterval);
+      atualizarContador();
+      countdownInterval = setInterval(atualizarContador, 1000);
+
+      // Rodar dedup e filtros após tudo carregar
+      setTimeout(() => {
+        detectarDuplicatas();
+        aplicarFiltros();
+      }, 200);
+    }
+
+    // Inicialização
+    inicializarLidos();
+    inicializarFavoritos();
+    inicializarNotifs();
+    restaurarDeURL();
+
+    // Restaurar estado de dedup
+    if (localStorage.getItem('monitor-usp-dedup') === '1') {
+      ocultarDups = true;
+      document.getElementById('btn-dedup').classList.add('ativo');
+      document.getElementById('btn-dedup').textContent = '⇄ Mostrar duplicatas';
+    }
+
+    // Carregar config de layout
+    const savedCfg = localStorage.getItem(CONFIG_KEY);
+    carregarLayoutConfig(savedCfg ? { ...DEFAULTS, ...JSON.parse(savedCfg) } : DEFAULTS);
+
+    // Carregar cores customizadas
+    carregarCores();
+
+    // Renderizar favoritos inicialmente
+    renderizarFavoritos();
+
+    // ==============================
+    // MINIMIZAR COLUNAS
+    // ==============================
+    const MINIMIZADAS_KEY = 'monitor-usp-minimizadas';
+
+    function toggleMinimizarColuna(colId) {
+      const col = document.getElementById(colId);
+      if (!col) return;
+      col.classList.toggle('minimized');
+      const btn = col.querySelector('.btn-minimizar');
+      if (btn) btn.title = col.classList.contains('minimized') ? 'Restaurar coluna' : 'Minimizar coluna';
+      const mins = new Set(JSON.parse(localStorage.getItem(MINIMIZADAS_KEY) || '[]'));
+      col.classList.contains('minimized') ? mins.add(colId) : mins.delete(colId);
+      localStorage.setItem(MINIMIZADAS_KEY, JSON.stringify([...mins]));
+    }
+
+    // Inject minimize button into every column header
+    document.querySelectorAll('.coluna').forEach(col => {
+      const btnGroup = col.querySelector('.coluna-header > div');
+      if (!btnGroup) return;
+      const btn = document.createElement('button');
+      btn.className = 'btn-minimizar';
+      btn.title = 'Minimizar coluna';
+      btn.textContent = '▴';
+      btn.onclick = e => { e.stopPropagation(); toggleMinimizarColuna(col.id); };
+      btnGroup.prepend(btn);
+    });
+
+    // Restore minimized state
+    JSON.parse(localStorage.getItem(MINIMIZADAS_KEY) || '[]').forEach(colId => {
+      const col = document.getElementById(colId);
+      if (!col) return;
+      col.classList.add('minimized');
+      const btn = col.querySelector('.btn-minimizar');
+      if (btn) btn.title = 'Restaurar coluna';
+    });
+
+    // ==============================
+    // NAVEGAÇÃO HORIZONTAL
+    // ==============================
+    (function() {
+      const cols   = document.getElementById('colunas-container');
+      const togBar = document.getElementById('toggle-bar');
+
+      // Scroll arrow buttons
+      const btnEsq = document.getElementById('scroll-esq');
+      const btnDir = document.getElementById('scroll-dir');
+      const PASSO = 340;
+
+      function atualizarSetas() {
+        btnEsq.classList.toggle('visivel', cols.scrollLeft > 8);
+        btnDir.classList.toggle('visivel', cols.scrollLeft < cols.scrollWidth - cols.clientWidth - 8);
+      }
+
+      btnEsq.addEventListener('click', () => { cols.scrollBy({ left: -PASSO, behavior: 'smooth' }); });
+      btnDir.addEventListener('click', () => { cols.scrollBy({ left:  PASSO, behavior: 'smooth' }); });
+      cols.addEventListener('scroll', atualizarSetas, { passive: true });
+      setTimeout(atualizarSetas, 600); // after columns render
+
+      // Mouse wheel → horizontal scroll on columns container
+      cols.addEventListener('wheel', e => {
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+          e.preventDefault();
+          cols.scrollLeft += e.deltaY * 1.5;
+          atualizarSetas();
+        }
+      }, { passive: false });
+
+      // Drag-to-scroll helper — uses document listeners to avoid stealing pointer capture
+      function addDragScroll(el, skipSelector) {
+        let down = false, startX = 0, startScroll = 0, moved = false;
+
+        el.addEventListener('pointerdown', e => {
+          if (skipSelector && e.target.closest(skipSelector)) return;
+          down = true; moved = false;
+          startX = e.clientX;
+          startScroll = el.scrollLeft;
+        });
+
+        document.addEventListener('pointermove', e => {
+          if (!down) return;
+          const dx = e.clientX - startX;
+          if (Math.abs(dx) > 4) moved = true;
+          if (moved) el.scrollLeft = startScroll - dx;
+        });
+
+        document.addEventListener('pointerup', () => { down = false; });
+
+        // Block click only when a real drag happened (capture phase, before onclick)
+        el.addEventListener('click', e => {
+          if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; }
+        }, true);
+      }
+
+      // Toggle bar: drag-to-scroll; click still works when not dragging
+      addDragScroll(togBar, null);
+
+      // Columns: drag-to-scroll on empty space only (skip items/headers)
+      addDragScroll(cols, '.item, a, button, input, .coluna-header, .resize-handle');
+    })();
+
+    // Carregar dados
+    carregarTodosOsDados();
+    setInterval(carregarTodosOsDados, TEMPO_REFRESH);
+
+  </script>
+</body>
+</html>
