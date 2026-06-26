@@ -216,7 +216,7 @@
     .coluna-header:active { cursor: grabbing; }
     .coluna-header h2 { margin: 0; font-size: 12px; pointer-events: none; font-weight: 700; letter-spacing: 0.01em; text-transform: uppercase; }
     .coluna-count { font-size: 10px; background: var(--bg-count); color: var(--text-count); padding: 2px 7px; border-radius: 20px; font-weight: 700; pointer-events: none; }
-    .coluna-body { max-height: var(--col-max-height); overflow-y: auto; overflow-x: hidden; }
+    .coluna-body { max-height: var(--col-max-height); overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; scrollbar-color: var(--border-color) transparent; }
 
     .resize-handle { position: absolute; top: 0; right: 0; width: 5px; height: 100%; cursor: col-resize; z-index: 10; transition: background 0.15s; }
     .resize-handle:hover, .resize-handle.resizing { background: var(--link-color); opacity: 0.5; }
@@ -267,6 +267,7 @@
     .toggle-bar { background: var(--bg-busca); border-bottom: 1px solid var(--border-color); padding: 7px 20px; display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; cursor: grab; transition: background-color 0.3s; }
     .toggle-bar:active { cursor: grabbing; }
     .toggle-bar::-webkit-scrollbar { display: none; }
+    .colunas { scrollbar-width: thin; scrollbar-color: var(--border-color) transparent; }
     .colunas::-webkit-scrollbar { height: 6px; }
     .colunas::-webkit-scrollbar-track { background: transparent; }
     .colunas::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
