@@ -442,9 +442,9 @@
     <button class="toggle-col-btn tipo-externo ativo"   data-col="col-alerts"    onclick="toggleColuna(this)">🔔 Google Alerts</button>
     <button class="toggle-col-btn tipo-externo ativo"   data-col="col-agencia"   onclick="toggleColuna(this)">📡 Agência Brasil</button>
     <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-fapesp"    onclick="toggleColuna(this)">🔬 FAPESP</button>
+    <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-livros"    onclick="toggleColuna(this)">📚 Livros USP</button>
     <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-openalex"  onclick="toggleColuna(this)">🔭 OpenAlex</button>
     <button class="toggle-col-btn tipo-pessoal ativo"   data-col="col-obitos"    onclick="toggleColuna(this)">🕯️ Óbitos USP</button>
-    <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-livros"    onclick="toggleColuna(this)">📚 Livros USP</button>
     <button class="btn-dedup" id="btn-dedup" onclick="toggleDedup()">⇄ Ocultar duplicatas</button>
   </div>
   <div class="refresh-bar"><div class="refresh-bar-fill" id="refresh-bar-fill"></div></div>
@@ -596,6 +596,23 @@
       </div>
     </div>
 
+    <div class="coluna tipo-ciencia" id="col-livros" draggable="true">
+      <div class="resize-handle"></div>
+      <div class="coluna-header">
+        <h2>📚 Livros USP <span class="col-status-icon" id="status-col-livros"></span></h2>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-livros')" title="Marcar todos como lidos">✓</button>
+          <button class="btn-col-refresh" id="refresh-col-livros" onclick="refreshColuna('col-livros')" title="Atualizar coluna">↻</button>
+          <span class="badge-nao-lido" id="nao-lidos-col-livros" style="display:none"></span>
+          <span class="coluna-count" id="count-livros">—</span>
+        </div>
+      </div>
+      <div class="coluna-body">
+        <div id="livros-container" class="estado">Carregando...</div>
+        <div id="sem-livros" class="sem-resultado">Nenhum resultado.</div>
+      </div>
+    </div>
+
     <div class="coluna tipo-ciencia" id="col-openalex" draggable="true">
       <div class="resize-handle"></div>
       <div class="coluna-header">
@@ -627,23 +644,6 @@
       <div class="coluna-body">
         <div id="obitos-container" class="estado">Carregando...</div>
         <div id="sem-obitos" class="sem-resultado">Nenhum resultado.</div>
-      </div>
-    </div>
-
-    <div class="coluna tipo-ciencia" id="col-livros" draggable="true">
-      <div class="resize-handle"></div>
-      <div class="coluna-header">
-        <h2>📚 Livros USP <span class="col-status-icon" id="status-col-livros"></span></h2>
-        <div style="display:flex;align-items:center;gap:4px">
-          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-livros')" title="Marcar todos como lidos">✓</button>
-          <button class="btn-col-refresh" id="refresh-col-livros" onclick="refreshColuna('col-livros')" title="Atualizar coluna">↻</button>
-          <span class="badge-nao-lido" id="nao-lidos-col-livros" style="display:none"></span>
-          <span class="coluna-count" id="count-livros">—</span>
-        </div>
-      </div>
-      <div class="coluna-body">
-        <div id="livros-container" class="estado">Carregando...</div>
-        <div id="sem-livros" class="sem-resultado">Nenhum resultado.</div>
       </div>
     </div>
 
