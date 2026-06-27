@@ -444,7 +444,7 @@
     <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-fapesp"    onclick="toggleColuna(this)">🔬 FAPESP</button>
     <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-openalex"  onclick="toggleColuna(this)">🔭 OpenAlex</button>
     <button class="toggle-col-btn tipo-pessoal ativo"   data-col="col-obitos"    onclick="toggleColuna(this)">🕯️ Óbitos USP</button>
-    <button class="toggle-col-btn tipo-pessoal ativo"   data-col="col-teses"     onclick="toggleColuna(this)">🎓 Teses USP</button>
+    <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-livros"    onclick="toggleColuna(this)">📚 Livros USP</button>
     <button class="btn-dedup" id="btn-dedup" onclick="toggleDedup()">⇄ Ocultar duplicatas</button>
   </div>
   <div class="refresh-bar"><div class="refresh-bar-fill" id="refresh-bar-fill"></div></div>
@@ -630,20 +630,20 @@
       </div>
     </div>
 
-    <div class="coluna tipo-pessoal" id="col-teses" draggable="true">
+    <div class="coluna tipo-ciencia" id="col-livros" draggable="true">
       <div class="resize-handle"></div>
       <div class="coluna-header">
-        <h2>🎓 Teses USP <span class="col-status-icon" id="status-col-teses"></span></h2>
+        <h2>📚 Livros USP <span class="col-status-icon" id="status-col-livros"></span></h2>
         <div style="display:flex;align-items:center;gap:4px">
-          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-teses')" title="Marcar todos como lidos">✓</button>
-          <button class="btn-col-refresh" id="refresh-col-teses" onclick="refreshColuna('col-teses')" title="Atualizar coluna">↻</button>
-          <span class="badge-nao-lido" id="nao-lidos-col-teses" style="display:none"></span>
-          <span class="coluna-count" id="count-teses">—</span>
+          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-livros')" title="Marcar todos como lidos">✓</button>
+          <button class="btn-col-refresh" id="refresh-col-livros" onclick="refreshColuna('col-livros')" title="Atualizar coluna">↻</button>
+          <span class="badge-nao-lido" id="nao-lidos-col-livros" style="display:none"></span>
+          <span class="coluna-count" id="count-livros">—</span>
         </div>
       </div>
       <div class="coluna-body">
-        <div id="teses-container" class="estado">Carregando...</div>
-        <div id="sem-teses" class="sem-resultado">Nenhum resultado.</div>
+        <div id="livros-container" class="estado">Carregando...</div>
+        <div id="sem-livros" class="sem-resultado">Nenhum resultado.</div>
       </div>
     </div>
 
@@ -677,7 +677,7 @@
       { container: "fapesp-container",    sem: "sem-fapesp",    count: "count-fapesp",    colId: "col-fapesp",   local: false, fn: () => carregarRSS(RSS_FAPESP,  "fapesp-container",  "count-fapesp",  20, "col-fapesp")  },
       { container: "openalex-container",  sem: "sem-openalex",  count: "count-openalex",  colId: "col-openalex", local: false, fn: () => carregarOpenAlex()     },
       { container: "reddit-container",    sem: "sem-reddit",    count: "count-reddit",    colId: "col-reddit",   local: false, fn: () => carregarRSS(RSS_REDDIT,  "reddit-container",  "count-reddit",  20, "col-reddit")  },
-      { container: "teses-container",     sem: "sem-teses",     count: "count-teses",     colId: "col-teses",    local: false, fn: () => carregarTesesUSP()     },
+      { container: "livros-container",     sem: "sem-livros",    count: "count-livros",    colId: "col-livros",   local: false, fn: () => carregarLivrosUSP()    },
       { container: "obitos-container",    sem: "sem-obitos",    count: "count-obitos",    colId: "col-obitos",   local: false, fn: () => carregarRSS(RSS_OBITOS,  "obitos-container",  "count-obitos",  30, "col-obitos")   },
       { container: "agencia-container",   sem: "sem-agencia",   count: "count-agencia",   colId: "col-agencia",  local: false, fn: () => carregarRSS(RSS_AGENCIA, "agencia-container", "count-agencia", 25, "col-agencia")  },
     ];
@@ -687,7 +687,7 @@
       'col-rss': 'Jornal USP', 'col-bsky': 'Bluesky', 'col-yt': 'YouTube',
       'col-alerts': 'Google Alerts', 'col-reddit': 'Reddit',
       'col-fapesp': 'FAPESP', 'col-openalex': 'OpenAlex',
-      'col-teses': 'Teses USP', 'col-obitos': 'Óbitos USP', 'col-agencia': 'Agência Brasil', 'col-favoritos': 'Favoritos'
+      'col-livros': 'Livros USP', 'col-obitos': 'Óbitos USP', 'col-agencia': 'Agência Brasil', 'col-favoritos': 'Favoritos'
     };
 
     // ==============================
@@ -1693,95 +1693,59 @@
     }
 
     // ==============================
-    // TESES USP (OAI-PMH)
+    // LIVROS USP (OpenAlex — type:book)
     // ==============================
-    const TESES_KEYWORDS = [
-      'urbanismo', 'planejamento urbano', 'cidades', 'planejamento de cidades'
-    ];
-
-    async function carregarTesesUSP() {
-      const container = document.getElementById("teses-container");
-      const colId = 'col-teses';
-
-      // OpenAlex: CORS-free JSON API, USP institution ID I17974374 (same as existing column)
-      // Run one call per keyword in parallel; combine & deduplicate by work ID
-      const USP_ID = 'I17974374';
-      const BASE = 'https://api.openalex.org/works';
-      const PARAMS = `filter=institutions.id:${USP_ID},type:dissertation&sort=publication_date:desc&per-page=25&mailto=monitor-usp@usp.br`;
-
+    async function carregarLivrosUSP() {
+      const container = document.getElementById("livros-container");
+      const colId = 'col-livros';
+      const url = "https://api.openalex.org/works?filter=institutions.id:I17974374,type:book&sort=publication_date:desc&per-page=25&mailto=monitor-usp@usp.br";
       try {
-        const settled = await Promise.allSettled(
-          TESES_KEYWORDS.map(kw =>
-            fetch(`${BASE}?${PARAMS}&search=${encodeURIComponent(kw)}`, { headers: { Accept: 'application/json' } })
-              .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
-              .then(d => d.results || [])
-          )
-        );
+        const resp = await fetch(url, { headers: { Accept: 'application/json' } });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const dados = await resp.json();
+        const items = dados.results || [];
 
-        const seen = new Set();
-        const matches = [];
-
-        settled.forEach(res => {
-          if (res.status !== 'fulfilled') return;
-          res.value.forEach(w => {
-            if (seen.has(w.id)) return;
-            seen.add(w.id);
-
-            const titulo = w.title || '(sem título)';
-            const link   = w.primary_location?.landing_page_url
-                        || (w.doi ? `https://doi.org/${w.doi.replace('https://doi.org/', '')}` : '');
-            const isodate = w.publication_date || (w.publication_year ? `${w.publication_year}-01-01` : '');
-
-            const autores = (w.authorships || [])
-              .map(a => a.author?.display_name).filter(Boolean).slice(0, 2).join(', ');
-            const tipo = (w.type || '').toLowerCase();
-            const tipoLabel = tipo.includes('dissertation') || tipo.includes('thesis') ? 'Tese / Dissertação' : '';
-
-            const extraHtml = [
-              autores   ? `<div class="fonte">👤 ${autores}</div>` : '',
-              tipoLabel ? `<div class="fonte">🎓 ${tipoLabel}</div>` : '',
-            ].join('');
-
-            matches.push({ titulo, link, isodate, extraHtml, colId });
-          });
-        });
-
-        // Newest first; items without date go to the end
-        matches.sort((a, b) => {
-          if (!a.isodate && !b.isodate) return 0;
-          if (!a.isodate) return 1;
-          if (!b.isodate) return -1;
-          return b.isodate.localeCompare(a.isodate);
-        });
-
-        container.innerHTML = '';
-
-        if (!matches.length) {
-          container.innerHTML = `<div class="estado">Nenhuma tese/dissertação encontrada no OpenAlex para os termos configurados.<br>
-            <a href="https://teses.usp.br" target="_blank" style="color:var(--link-color)">🔗 Buscar em Teses USP</a></div>`;
-          document.getElementById('count-teses').textContent = '0';
+        if (!items.length) {
+          container.innerHTML = `<div class="estado">Nenhum livro encontrado.<br>
+            <a href="https://www.livrosabertos.abcd.usp.br/portaldelivrosUSP" target="_blank" style="color:var(--link-color)">🔗 Portal Livros USP</a></div>`;
+          document.getElementById('count-livros').textContent = '0';
           return;
         }
 
-        const slice = matches.slice(0, 30);
-        slice.forEach(d => container.appendChild(criarItem(d)));
-        document.getElementById('count-teses').textContent = matches.length;
-        salvarCache(colId, slice);
-        notificarNovos(colId, slice.map(i => i.link || i.titulo));
-        atualizarBadgeNaoLidos(colId);
+        const cacheItems = [];
+        container.innerHTML = '';
+        items.forEach(w => {
+          const titulo  = w.title || '(sem título)';
+          const link    = w.primary_location?.landing_page_url
+                       || (w.doi ? `https://doi.org/${w.doi.replace('https://doi.org/', '')}` : '');
+          const isodate = w.publication_date || (w.publication_year ? `${w.publication_year}-01-01` : '');
+          const autores = (w.authorships || []).map(a => a.author?.display_name).filter(Boolean).slice(0, 2).join(', ');
+          const editora = w.primary_location?.source?.display_name || '';
+          const extraHtml = [
+            autores ? `<div class="fonte">👤 ${autores}</div>` : '',
+            editora ? `<div class="fonte">🏛️ ${editora}</div>` : '',
+          ].join('');
+          const data = { titulo, link, isodate, colId, extraHtml };
+          cacheItems.push(data);
+          container.appendChild(criarItem(data));
+        });
 
+        document.getElementById('count-livros').textContent = cacheItems.length;
+        salvarCache(colId, cacheItems);
+        notificarNovos(colId, cacheItems.map(i => i.link || i.titulo));
+        atualizarBadgeNaoLidos(colId);
       } catch(e) {
         const cache = carregarCache(colId);
         if (cache) {
           container.innerHTML = '';
           mostrarAvisoCache(container, cache.ts);
           cache.items.forEach(d => container.appendChild(criarItem({ ...d, colId })));
-          document.getElementById('count-teses').textContent = cache.items.length;
+          document.getElementById('count-livros').textContent = cache.items.length;
           atualizarBadgeNaoLidos(colId);
           setColStatus(colId, 'cache');
         } else {
-          container.innerHTML = `<div class="estado">${e.message}<br>
-            <a href="https://teses.usp.br" target="_blank" style="color:var(--link-color)">🔗 Abrir Teses USP</a></div>`;
+          container.innerHTML = `<div class="estado">Não foi possível carregar.<br>
+            <a href="https://www.livrosabertos.abcd.usp.br/portaldelivrosUSP" target="_blank" style="color:var(--link-color)">🔗 Portal Livros USP</a></div>`;
         }
         throw e;
       }
