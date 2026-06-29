@@ -434,17 +434,17 @@
 
   <div class="toggle-bar" id="toggle-bar">
     <label>📋 Colunas:</label>
-    <button class="toggle-col-btn tipo-favoritos ativo" data-col="col-favoritos" onclick="toggleColuna(this)">⭐ Favoritos</button>
-    <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-rss"       onclick="toggleColuna(this)">🗞️ Jornal USP</button>
-    <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-bsky"      onclick="toggleColuna(this)">🦋 Bluesky</button>
-    <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-yt"        onclick="toggleColuna(this)">▶️ YouTube</button>
-    <button class="toggle-col-btn tipo-externo ativo"   data-col="col-reddit"    onclick="toggleColuna(this)">💬 Reddit</button>
-    <button class="toggle-col-btn tipo-externo ativo"   data-col="col-alerts"    onclick="toggleColuna(this)">🔔 Google Alerts</button>
-    <button class="toggle-col-btn tipo-externo ativo"   data-col="col-agencia"   onclick="toggleColuna(this)">📡 Agência Brasil</button>
-    <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-fapesp"    onclick="toggleColuna(this)">🔬 FAPESP</button>
-    <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-livros"    onclick="toggleColuna(this)">📚 Livros USP</button>
-    <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-openalex"  onclick="toggleColuna(this)">🔭 OpenAlex</button>
-    <button class="toggle-col-btn tipo-pessoal ativo"   data-col="col-obitos"    onclick="toggleColuna(this)">🕯️ Óbitos USP</button>
+    <button class="toggle-col-btn tipo-favoritos ativo" data-col="col-favoritos" onclick="toggleColuna(this, event)">⭐ Favoritos</button>
+    <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-rss"       onclick="toggleColuna(this, event)">🗞️ Jornal USP</button>
+    <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-bsky"      onclick="toggleColuna(this, event)">🦋 Bluesky</button>
+    <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-yt"        onclick="toggleColuna(this, event)">▶️ YouTube</button>
+    <button class="toggle-col-btn tipo-externo ativo"   data-col="col-reddit"    onclick="toggleColuna(this, event)">💬 Reddit</button>
+    <button class="toggle-col-btn tipo-externo ativo"   data-col="col-alerts"    onclick="toggleColuna(this, event)">🔔 Google Alerts</button>
+    <button class="toggle-col-btn tipo-externo ativo"   data-col="col-agencia"   onclick="toggleColuna(this, event)">📡 Agência Brasil</button>
+    <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-fapesp"    onclick="toggleColuna(this, event)">🔬 FAPESP</button>
+    <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-livros"    onclick="toggleColuna(this, event)">📚 Livros USP</button>
+    <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-openalex"  onclick="toggleColuna(this, event)">🔭 OpenAlex</button>
+    <button class="toggle-col-btn tipo-pessoal ativo"   data-col="col-obitos"    onclick="toggleColuna(this, event)">🕯️ Óbitos USP</button>
     <button class="btn-dedup" id="btn-dedup" onclick="toggleDedup()">⇄ Ocultar duplicatas</button>
   </div>
   <div class="refresh-bar"><div class="refresh-bar-fill" id="refresh-bar-fill"></div></div>
@@ -1356,21 +1356,31 @@
     // ==============================
     const TOGGLE_KEY = 'monitor-usp-cols-ocultas';
 
-    function toggleColuna(btn) {
+    function toggleColuna(btn, e) {
       const colId = btn.dataset.col;
       const col   = document.getElementById(colId);
       if (!col) return;
       const estaAtivo = btn.classList.contains('ativo');
-      if (estaAtivo) {
+
+      if (!estaAtivo) {
+        // Coluna oculta → mostrar e rolar até ela
+        col.classList.remove('col-oculta'); btn.classList.add('ativo');
+        const ocultas = [...document.querySelectorAll('.toggle-col-btn:not(.ativo)')].map(b => b.dataset.col);
+        localStorage.setItem(TOGGLE_KEY, JSON.stringify(ocultas));
+        atualizarURL();
+        setTimeout(() => col.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30);
+      } else if (e?.shiftKey) {
+        // Shift+clique → ocultar (respeitando mínimo de 1 coluna visível)
         const ativos = document.querySelectorAll('.toggle-col-btn.ativo').length;
         if (ativos <= 1) return;
         col.classList.add('col-oculta'); btn.classList.remove('ativo');
+        const ocultas = [...document.querySelectorAll('.toggle-col-btn:not(.ativo)')].map(b => b.dataset.col);
+        localStorage.setItem(TOGGLE_KEY, JSON.stringify(ocultas));
+        atualizarURL();
       } else {
-        col.classList.remove('col-oculta'); btn.classList.add('ativo');
+        // Clique normal em coluna visível → rolar até ela
+        col.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-      const ocultas = [...document.querySelectorAll('.toggle-col-btn:not(.ativo)')].map(b => b.dataset.col);
-      localStorage.setItem(TOGGLE_KEY, JSON.stringify(ocultas));
-      atualizarURL();
     }
 
     const savedOcultas = localStorage.getItem(TOGGLE_KEY);
