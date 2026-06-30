@@ -1439,6 +1439,8 @@
         localStorage.setItem(TOGGLE_KEY, JSON.stringify(ocultas));
         atualizarURL();
         setTimeout(() => col.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30);
+        // Coluna oculta não é buscada nos refreshes automáticos (economiza cota do proxy) — atualiza agora que voltou a ficar visível
+        refreshColuna(colId);
       } else if (e?.shiftKey) {
         // Shift+clique → ocultar (respeitando mínimo de 1 coluna visível)
         const ativos = document.querySelectorAll('.toggle-col-btn.ativo').length;
@@ -2145,7 +2147,8 @@
     async function carregarTodosOsDados() {
       atualizarStatusGlobal('carregando');
 
-      const colunasRemote = COLUNAS.filter(c => !c.local);
+      // Colunas ocultadas pelo usuário não são buscadas — economiza chamadas ao proxy (cota diária do Apps Script)
+      const colunasRemote = COLUNAS.filter(c => !c.local && !document.getElementById(c.colId)?.classList.contains('col-oculta'));
       await Promise.allSettled(colunasRemote.map(col => wrapCarregar(col.colId, col.fn)()));
 
       ultimaAtualizacao = new Date();
@@ -2282,8 +2285,13 @@
     })();
 
     // Carregar dados
+    // Pausa o refresh automático com a aba em segundo plano (economiza cota do proxy);
+    // ao voltar o foco, atualiza na hora se o ciclo já devia ter rodado.
     carregarTodosOsDados();
-    setInterval(carregarTodosOsDados, TEMPO_REFRESH);
+    setInterval(() => { if (!document.hidden) carregarTodosOsDados(); }, TEMPO_REFRESH);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && proximoRefresh && Date.now() >= proximoRefresh) carregarTodosOsDados();
+    });
 
   </script>
 </body>
