@@ -23,6 +23,7 @@
       --cat-externo: #e65100;
       --cat-ciencia: #00796b;
       --cat-pessoal: #7c3aed;
+      --cat-sindical: #dc2626;
       --jornal-bg: #f0f4fa;
       --jornal-header-bg: #e8eef8;
       --jornal-border: #003063;
@@ -53,6 +54,7 @@
       --cat-externo: #ff9800;
       --cat-ciencia: #4db6ac;
       --cat-pessoal: #c084fc;
+      --cat-sindical: #f87171;
       --jornal-bg: #0a0a0a;
       --jornal-header-bg: #111111;
       --jornal-border: #58a6ff;
@@ -193,6 +195,8 @@
     body.dark-theme .coluna.tipo-favoritos .coluna-header h2 { color: #fbbf24; }
     .coluna.tipo-pessoal { border-top: 4px solid var(--cat-pessoal); }
     .coluna.tipo-pessoal .coluna-header h2 { color: var(--cat-pessoal); }
+    .coluna.tipo-sindical { border-top: 4px solid var(--cat-sindical); }
+    .coluna.tipo-sindical .coluna-header h2 { color: var(--cat-sindical); }
     /* Minimize */
     .coluna.minimized .coluna-body { display: none; }
     .btn-minimizar { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 11px; padding: 0 2px; opacity: 0.35; transition: opacity 0.15s, transform 0.2s; line-height:1; }
@@ -320,6 +324,7 @@
     .toggle-col-btn.ativo.tipo-oficial  { background: var(--cat-oficial); }
     .toggle-col-btn.ativo.tipo-favoritos { background: #d97706; }
     .toggle-col-btn.ativo.tipo-pessoal  { background: var(--cat-pessoal); }
+    .toggle-col-btn.ativo.tipo-sindical { background: var(--cat-sindical); }
     .toggle-col-btn:not(.ativo) { opacity: 0.45; }
     .toggle-col-btn:hover { opacity: 1; }
     .toggle-col-btn { cursor: grab; }
@@ -406,6 +411,10 @@
             <input type="color" class="cor-picker" id="cor-pessoal" value="#7c3aed" oninput="aoMudarCor('pessoal',this.value)">
             <span>Pessoal</span>
           </label>
+          <label class="config-color-item" title="Cor das colunas sindicais/movimento">
+            <input type="color" class="cor-picker" id="cor-sindical" value="#dc2626" oninput="aoMudarCor('sindical',this.value)">
+            <span>Sindical</span>
+          </label>
           <button class="config-reset" onclick="resetarCores()" style="margin-left:2px; align-self:center;" title="Restaurar cores padrão">↺ Cores</button>
         </div>
       </div>
@@ -445,6 +454,9 @@
     <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-livros"    onclick="toggleColuna(this, event)">📚 Livros USP</button>
     <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-openalex"  onclick="toggleColuna(this, event)">🔭 OpenAlex</button>
     <button class="toggle-col-btn tipo-pessoal ativo"   data-col="col-obitos"    onclick="toggleColuna(this, event)">🕯️ Óbitos USP</button>
+    <button class="toggle-col-btn tipo-sindical ativo"  data-col="col-sintusp"   onclick="toggleColuna(this, event)">🚩 Sintusp</button>
+    <button class="toggle-col-btn tipo-sindical ativo"  data-col="col-adusp"     onclick="toggleColuna(this, event)">🚩 Adusp</button>
+    <button class="toggle-col-btn tipo-sindical ativo"  data-col="col-dce"       onclick="toggleColuna(this, event)">📸 DCE (Instagram)</button>
     <button class="btn-dedup" id="btn-dedup" onclick="toggleDedup()">⇄ Ocultar duplicatas</button>
   </div>
   <div class="refresh-bar"><div class="refresh-bar-fill" id="refresh-bar-fill"></div></div>
@@ -647,6 +659,57 @@
       </div>
     </div>
 
+    <div class="coluna tipo-sindical" id="col-sintusp" draggable="true">
+      <div class="resize-handle"></div>
+      <div class="coluna-header">
+        <h2>🚩 Sintusp <span class="col-status-icon" id="status-col-sintusp"></span></h2>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-sintusp')" title="Marcar todos como lidos">✓</button>
+          <button class="btn-col-refresh" id="refresh-col-sintusp" onclick="refreshColuna('col-sintusp')" title="Atualizar coluna">↻</button>
+          <span class="badge-nao-lido" id="nao-lidos-col-sintusp" style="display:none"></span>
+          <span class="coluna-count" id="count-sintusp">—</span>
+        </div>
+      </div>
+      <div class="coluna-body">
+        <div id="sintusp-container" class="estado">Carregando...</div>
+        <div id="sem-sintusp" class="sem-resultado">Nenhum resultado.</div>
+      </div>
+    </div>
+
+    <div class="coluna tipo-sindical" id="col-adusp" draggable="true">
+      <div class="resize-handle"></div>
+      <div class="coluna-header">
+        <h2>🚩 Adusp <span class="col-status-icon" id="status-col-adusp"></span></h2>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-adusp')" title="Marcar todos como lidos">✓</button>
+          <button class="btn-col-refresh" id="refresh-col-adusp" onclick="refreshColuna('col-adusp')" title="Atualizar coluna">↻</button>
+          <span class="badge-nao-lido" id="nao-lidos-col-adusp" style="display:none"></span>
+          <span class="coluna-count" id="count-adusp">—</span>
+        </div>
+      </div>
+      <div class="coluna-body">
+        <div id="adusp-container" class="estado">Carregando...</div>
+        <div id="sem-adusp" class="sem-resultado">Nenhum resultado.</div>
+      </div>
+    </div>
+
+    <div class="coluna tipo-sindical" id="col-dce" draggable="true">
+      <div class="resize-handle"></div>
+      <div class="coluna-header">
+        <h2>📸 DCE USP <span class="col-status-icon" id="status-col-dce"></span></h2>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-dce')" title="Marcar todos como lidos">✓</button>
+          <button class="btn-col-refresh" id="refresh-col-dce" onclick="refreshColuna('col-dce')" title="Atualizar coluna">↻</button>
+          <span class="badge-nao-lido" id="nao-lidos-col-dce" style="display:none"></span>
+          <span class="coluna-count" id="count-dce">—</span>
+        </div>
+      </div>
+      <div class="coluna-body">
+        <div id="dce-container" class="estado">Carregando...</div>
+        <div id="sem-dce" class="sem-resultado">Nenhum resultado.</div>
+      </div>
+    </div>
+
     </div>
 
   </div><!-- /colunas -->
@@ -668,6 +731,9 @@
     const RSS_REDDIT     = "https://www.reddit.com/r/usp/.rss";
     const RSS_OBITOS     = "https://news.google.com/rss/search?q=(falecimento+OR+obituário+OR+faleceu+OR+%22nota+de+falecimento%22)+(USP+OR+%22Universidade+de+São+Paulo%22)&hl=pt-BR&gl=BR&ceid=BR:pt-419";
     const RSS_AGENCIA    = "https://agenciabrasil.ebc.com.br/rss/educacao/feed.xml";
+    const RSS_SINTUSP    = "https://www.sintusp.org.br/feed/";
+    const RSS_ADUSP      = "https://adusp.org.br/feed/";
+    const DCE_INSTAGRAM_URL = "https://www.instagram.com/dceusp/";
     const COLUNAS = [
       { container: "favoritos-container", sem: "sem-favoritos", count: "count-favoritos", colId: "col-favoritos", local: true,  fn: renderizarFavoritos },
       { container: "alerts-container",    sem: "sem-alerts",    count: "count-alerts",    colId: "col-alerts",   local: false, fn: () => carregarRSS(RSS_ALERTS, "alerts-container",  "count-alerts",  20, "col-alerts")  },
@@ -680,6 +746,9 @@
       { container: "livros-container",     sem: "sem-livros",    count: "count-livros",    colId: "col-livros",   local: false, fn: () => carregarLivrosUSP()    },
       { container: "obitos-container",    sem: "sem-obitos",    count: "count-obitos",    colId: "col-obitos",   local: false, fn: () => carregarRSS(RSS_OBITOS,  "obitos-container",  "count-obitos",  30, "col-obitos")   },
       { container: "agencia-container",   sem: "sem-agencia",   count: "count-agencia",   colId: "col-agencia",  local: false, fn: () => carregarRSS(RSS_AGENCIA, "agencia-container", "count-agencia", 25, "col-agencia")  },
+      { container: "sintusp-container",   sem: "sem-sintusp",   count: "count-sintusp",   colId: "col-sintusp",  local: false, fn: () => carregarRSS(RSS_SINTUSP, "sintusp-container", "count-sintusp", 20, "col-sintusp")  },
+      { container: "adusp-container",     sem: "sem-adusp",     count: "count-adusp",     colId: "col-adusp",    local: false, fn: () => carregarRSS(RSS_ADUSP,   "adusp-container",   "count-adusp",   20, "col-adusp")    },
+      { container: "dce-container",       sem: "sem-dce",       count: "count-dce",       colId: "col-dce",      local: false, fn: () => carregarDCE() },
     ];
 
     // Nome legível de cada coluna
@@ -687,7 +756,8 @@
       'col-rss': 'Jornal USP', 'col-bsky': 'Bluesky', 'col-yt': 'YouTube',
       'col-alerts': 'Google Alerts', 'col-reddit': 'Reddit',
       'col-fapesp': 'FAPESP', 'col-openalex': 'OpenAlex',
-      'col-livros': 'Livros USP', 'col-obitos': 'Óbitos USP', 'col-agencia': 'Agência Brasil', 'col-favoritos': 'Favoritos'
+      'col-livros': 'Livros USP', 'col-obitos': 'Óbitos USP', 'col-agencia': 'Agência Brasil', 'col-favoritos': 'Favoritos',
+      'col-sintusp': 'Sintusp', 'col-adusp': 'Adusp', 'col-dce': 'DCE USP (Instagram)'
     };
 
     // ==============================
@@ -1545,6 +1615,25 @@
     }
 
     // ==============================
+    // DCE USP (sem RSS oficial — cartão de link para o Instagram)
+    // ==============================
+    function carregarDCE() {
+      const container = document.getElementById("dce-container");
+      const colId = 'col-dce';
+      container.innerHTML = "";
+      const data = {
+        titulo: 'Ver perfil @dceusp no Instagram',
+        link: DCE_INSTAGRAM_URL,
+        isodate: '',
+        colId,
+        extraHtml: '<div class="fonte">📸 Sem RSS — confira manualmente no Instagram</div>'
+      };
+      container.appendChild(criarItem(data));
+      document.getElementById("count-dce").textContent = '1';
+      atualizarBadgeNaoLidos(colId);
+    }
+
+    // ==============================
     // JORNAL DA USP (RSS com imagens)
     // ==============================
     async function carregarJornalUSP() {
@@ -1888,8 +1977,8 @@
     // CORES DAS CATEGORIAS
     // ==============================
     const CORES_KEY = 'monitor-usp-cores';
-    const CORES_PADRAO_LIGHT = { oficial: '#003063', externo: '#e65100', ciencia: '#00796b', pessoal: '#7c3aed' };
-    const CORES_PADRAO_DARK  = { oficial: '#58a6ff', externo: '#ff9800', ciencia: '#4db6ac', pessoal: '#c084fc' };
+    const CORES_PADRAO_LIGHT = { oficial: '#003063', externo: '#e65100', ciencia: '#00796b', pessoal: '#7c3aed', sindical: '#dc2626' };
+    const CORES_PADRAO_DARK  = { oficial: '#58a6ff', externo: '#ff9800', ciencia: '#4db6ac', pessoal: '#c084fc', sindical: '#f87171' };
 
     function aplicarCores(cores) {
       let el = document.getElementById('user-color-overrides');
@@ -1904,6 +1993,7 @@
         ${cores.externo ? `--cat-externo: ${cores.externo};` : ''}
         ${cores.ciencia ? `--cat-ciencia: ${cores.ciencia};` : ''}
         ${cores.pessoal ? `--cat-pessoal: ${cores.pessoal};` : ''}
+        ${cores.sindical ? `--cat-sindical: ${cores.sindical};` : ''}
       }`;
     }
 
