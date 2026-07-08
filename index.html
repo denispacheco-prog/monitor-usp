@@ -228,7 +228,8 @@
     .resize-handle:hover, .resize-handle.resizing { background: var(--link-color); opacity: 0.5; }
 
     .colunas.duas-fileiras { display: grid; grid-template-rows: 1fr 1fr; grid-auto-flow: column; grid-auto-columns: var(--col-width); align-items: stretch; }
-    .colunas.duas-fileiras .coluna { width: 100%; height: auto; display: flex; flex-direction: column; }
+    .colunas.duas-fileiras .coluna { width: 100% !important; height: auto; display: flex; flex-direction: column; }
+    .colunas.duas-fileiras .resize-handle { display: none; }
 
     body.modo-2fileiras { height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
     body.modo-2fileiras .colunas-wrapper { flex: 1 1 0; min-height: 0; }
@@ -1461,7 +1462,7 @@
         const ocultas = [...document.querySelectorAll('.toggle-col-btn:not(.ativo)')].map(b => b.dataset.col);
         localStorage.setItem(TOGGLE_KEY, JSON.stringify(ocultas));
         atualizarURL();
-        setTimeout(() => col.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30);
+        setTimeout(() => scrollParaColuna(col), 30);
         // Coluna oculta não é buscada nos refreshes automáticos (economiza cota do proxy) — atualiza agora que voltou a ficar visível
         refreshColuna(colId);
       } else if (e?.shiftKey) {
@@ -1469,7 +1470,22 @@
         ocultarColunaPorBtn(btn);
       } else {
         // Clique normal em coluna visível → rolar até ela
-        col.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        scrollParaColuna(col);
+      }
+    }
+
+    // Rola apenas na horizontal, direto no contêiner de colunas — nunca no <body>
+    // (scrollIntoView pode escolher o <body> como alvo vertical, e no modo 2 fileiras
+    // ele fica com overflow:hidden, deixando a rolagem presa sem chance de desfazer)
+    function scrollParaColuna(col) {
+      const wrapper = document.getElementById('colunas-container');
+      const wrapperRect = wrapper.getBoundingClientRect();
+      const colRect = col.getBoundingClientRect();
+      const margem = 12;
+      if (colRect.left < wrapperRect.left) {
+        wrapper.scrollBy({ left: colRect.left - wrapperRect.left - margem, behavior: 'smooth' });
+      } else if (colRect.right > wrapperRect.right) {
+        wrapper.scrollBy({ left: colRect.right - wrapperRect.right + margem, behavior: 'smooth' });
       }
     }
 
