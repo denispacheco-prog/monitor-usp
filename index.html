@@ -1390,7 +1390,12 @@
 
     function setupToggleBtnDrag(btn) {
       btn.setAttribute('draggable', 'true');
+      // Shift+clique deve apenas ocultar a coluna — impede que o navegador interprete
+      // o pequeno movimento do mouse (comum ao segurar Shift) como início de um drag,
+      // o que cancelaria o evento de clique e faria o Shift+clique não fazer nada.
+      btn.addEventListener('mousedown', e => { if (e.shiftKey) e.preventDefault(); });
       btn.addEventListener('dragstart', function(e) {
+        if (e.shiftKey) { e.preventDefault(); return; }
         draggedColId = this.dataset.col; e.dataTransfer.effectAllowed = 'move';
         setTimeout(() => this.classList.add('dragging-btn'), 0);
       });
@@ -2318,6 +2323,7 @@
 
         el.addEventListener('pointerdown', e => {
           if (skipSelector && e.target.closest(skipSelector)) return;
+          if (e.shiftKey) return; // Shift+clique é para ocultar coluna, não para arrastar/rolar
           down = true; moved = false;
           startX = e.clientX;
           startScroll = el.scrollLeft;
