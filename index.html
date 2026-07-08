@@ -226,6 +226,11 @@
     .resize-handle { position: absolute; top: 0; right: 0; width: 5px; height: 100%; cursor: col-resize; z-index: 10; transition: background 0.15s; }
     .resize-handle:hover, .resize-handle.resizing { background: var(--link-color); opacity: 0.5; }
 
+    .colunas.duas-fileiras { display: grid; grid-template-rows: auto auto; grid-auto-flow: column; grid-auto-columns: var(--col-width); align-items: stretch; }
+    .colunas.duas-fileiras .coluna { width: 100%; height: auto; display: flex; flex-direction: column; }
+    .colunas.duas-fileiras .coluna-body { max-height: none; flex: 1 1 0; min-height: 0; }
+    .colunas.duas-fileiras .coluna.col-fixa { grid-row: span 2; }
+
     @keyframes entrarCard { from { opacity:0; transform:translateY(7px); } to { opacity:1; transform:translateY(0); } }
     .item { padding: var(--item-padding-v) var(--item-padding-h); border-bottom: 1px solid var(--border-color); position: relative; transition: background 0.12s, transform 0.18s, box-shadow 0.18s; animation: entrarCard 0.22s ease-out both; }
     .item:hover { background: var(--bg-item-hover); transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.10); z-index: 1; }
@@ -380,6 +385,13 @@
         </div>
       </div>
       <div class="config-grupo">
+        <label>Fileiras</label>
+        <div class="config-opcoes">
+          <button class="config-btn ativo" data-config="fileiras" data-val="1" onclick="aplicarConfig(this)">1 fileira</button>
+          <button class="config-btn" data-config="fileiras" data-val="2" onclick="aplicarConfig(this)">2 fileiras</button>
+        </div>
+      </div>
+      <div class="config-grupo">
         <label>Largura das colunas</label>
         <div class="config-slider-wrap">
           <input type="range" class="config-range" id="slider-largura" min="220" max="520" step="20" value="300" oninput="aplicarLargura(this.value)">
@@ -467,7 +479,7 @@
   <button class="scroll-arrow scroll-arrow-dir" id="scroll-dir" aria-label="Rolar para direita">&#8594;</button>
   <div class="colunas" id="colunas-container">
 
-    <div class="coluna tipo-favoritos" id="col-favoritos" draggable="true">
+    <div class="coluna tipo-favoritos col-fixa" id="col-favoritos" draggable="true">
       <div class="resize-handle"></div>
       <div class="coluna-header">
         <h2>⭐ Favoritos <span class="col-status-icon" id="status-col-favoritos"></span></h2>
@@ -490,7 +502,7 @@
       </div>
     </div>
 
-    <div class="coluna tipo-oficial jornal-usp" id="col-rss" draggable="true">
+    <div class="coluna tipo-oficial jornal-usp col-fixa" id="col-rss" draggable="true">
       <div class="resize-handle"></div>
       <div class="coluna-header">
         <h2>🗞️ Jornal da USP <span class="col-status-icon" id="status-col-rss"></span></h2>
@@ -2034,7 +2046,7 @@
     // PAINEL DE CONFIGURAÇÕES
     // ==============================
     const CONFIG_KEY = 'monitor-usp-layout';
-    const DEFAULTS = { densidade: 'normal', fonte: 'M', largura: 300, altura: 75 };
+    const DEFAULTS = { densidade: 'normal', fonte: 'M', largura: 300, altura: 75, fileiras: '1' };
     const DENSIDADE_MAP = {
       compacto:  { v: '6px',  h: '10px' },
       normal:    { v: '10px', h: '14px' },
@@ -2067,6 +2079,9 @@
         document.documentElement.style.setProperty('--font-size-link', f.link);
         document.documentElement.style.setProperty('--font-size-meta', f.meta);
       }
+      if (grupo === 'fileiras') {
+        document.getElementById('colunas-container').classList.toggle('duas-fileiras', val === '2');
+      }
       salvarLayoutConfig();
     }
 
@@ -2088,6 +2103,7 @@
         fonte:     document.querySelector('.config-btn[data-config="fonte"].ativo')?.dataset.val     || DEFAULTS.fonte,
         largura:   parseInt(document.getElementById('slider-largura').value),
         altura:    parseInt(document.getElementById('slider-altura').value),
+        fileiras:  document.querySelector('.config-btn[data-config="fileiras"].ativo')?.dataset.val  || DEFAULTS.fileiras,
         colWidths: {}
       };
       document.querySelectorAll('.coluna').forEach(col => { if (col.style.width) cfg.colWidths[col.id] = col.style.width; });
@@ -2109,6 +2125,8 @@
       sliderL.value = cfg.largura; aplicarLargura(cfg.largura);
       const sliderA = document.getElementById('slider-altura');
       sliderA.value = cfg.altura; aplicarAltura(cfg.altura);
+      const btnFileiras = document.querySelector(`.config-btn[data-config="fileiras"][data-val="${cfg.fileiras || DEFAULTS.fileiras}"]`);
+      if (btnFileiras) aplicarConfig(btnFileiras);
       if (cfg.colWidths) {
         Object.entries(cfg.colWidths).forEach(([id, w]) => {
           const col = document.getElementById(id);
