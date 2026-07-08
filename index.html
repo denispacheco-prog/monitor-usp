@@ -152,7 +152,8 @@
     .config-reset { margin-left: auto; font-size: 11px; color: var(--text-muted); background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 4px; transition: color 0.15s, background 0.15s; font-family: inherit; align-self: flex-end; }
     .config-reset:hover { color: var(--cat-externo); background: rgba(230,81,0,0.07); }
 
-    .busca-bar { background: var(--bg-busca); border-bottom: 1px solid var(--border-color); padding: 8px 20px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; transition: background-color 0.3s; }
+    .busca-bar { background: var(--bg-busca); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; overflow: hidden; max-height: 0; padding: 0 20px; transition: background-color 0.3s, max-height 0.25s ease, padding 0.25s ease; }
+    .busca-bar.aberto { max-height: 120px; padding: 8px 20px; }
     .busca-bar label { font-size: 12px; font-weight: 600; color: var(--link-color); white-space: nowrap; }
     .busca-bar input { flex: 1; min-width: 160px; max-width: 320px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-main); border-radius: 5px; padding: 5px 10px; font-size: 13px; outline: none; transition: border-color 0.2s; font-family: inherit; }
     .busca-bar input:focus { border-color: var(--link-color); }
@@ -362,6 +363,7 @@
       <button id="btn-refresh-all" class="btn-header-icon" onclick="refreshManual()" title="Atualizar tudo agora (R)">↻</button>
       <button id="btn-notif" class="btn-header-icon" onclick="toggleNotificacoes()" title="Ativar notificações">🔕</button>
       <button id="theme-toggle" class="btn-theme">🌙 Escuro</button>
+      <button id="btn-busca" class="btn-config" onclick="toggleBusca()">🔍 Buscar</button>
       <button id="btn-config" class="btn-config" onclick="toggleConfig()">⚙️ Layout</button>
     </div>
   </header>
@@ -435,7 +437,7 @@
     </div>
   </div>
 
-  <div class="busca-bar">
+  <div class="busca-bar" id="busca-bar">
     <label>🔍 Filtrar:</label>
     <input type="text" id="campo-busca" placeholder="Palavra-chave e Enter... (atalho: /)" />
     <button onclick="aplicarFiltros()">Buscar</button>
@@ -456,20 +458,20 @@
 
   <div class="toggle-bar" id="toggle-bar">
     <label>📋 Colunas:</label>
-    <button class="toggle-col-btn tipo-favoritos ativo" data-col="col-favoritos" onclick="toggleColuna(this, event)">⭐ Favoritos</button>
-    <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-rss"       onclick="toggleColuna(this, event)">🗞️ Jornal USP</button>
-    <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-bsky"      onclick="toggleColuna(this, event)">🦋 Bluesky</button>
-    <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-yt"        onclick="toggleColuna(this, event)">▶️ YouTube</button>
-    <button class="toggle-col-btn tipo-externo ativo"   data-col="col-reddit"    onclick="toggleColuna(this, event)">💬 Reddit</button>
-    <button class="toggle-col-btn tipo-externo ativo"   data-col="col-alerts"    onclick="toggleColuna(this, event)">🔔 Google Alerts</button>
-    <button class="toggle-col-btn tipo-externo ativo"   data-col="col-agencia"   onclick="toggleColuna(this, event)">📡 Agência Brasil</button>
-    <button class="toggle-col-btn tipo-externo ativo"   data-col="col-fapesp"    onclick="toggleColuna(this, event)">🔬 FAPESP</button>
-    <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-livros"    onclick="toggleColuna(this, event)">📚 Livros USP</button>
-    <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-openalex"  onclick="toggleColuna(this, event)">🔭 OpenAlex</button>
-    <button class="toggle-col-btn tipo-pessoal ativo"   data-col="col-obitos"    onclick="toggleColuna(this, event)">🕯️ Óbitos USP</button>
-    <button class="toggle-col-btn tipo-sindical ativo"  data-col="col-sintusp"   onclick="toggleColuna(this, event)">🚩 Sintusp</button>
-    <button class="toggle-col-btn tipo-sindical ativo"  data-col="col-adusp"     onclick="toggleColuna(this, event)">🚩 Adusp</button>
-    <button class="toggle-col-btn tipo-sindical ativo"  data-col="col-dce"       onclick="toggleColuna(this, event)">📸 DCE (Instagram)</button>
+    <button class="toggle-col-btn tipo-favoritos ativo" data-col="col-favoritos" onclick="toggleColuna(this, event)">Favoritos</button>
+    <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-rss"       onclick="toggleColuna(this, event)">Jornal USP</button>
+    <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-bsky"      onclick="toggleColuna(this, event)">Bluesky</button>
+    <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-yt"        onclick="toggleColuna(this, event)">YouTube</button>
+    <button class="toggle-col-btn tipo-externo ativo"   data-col="col-reddit"    onclick="toggleColuna(this, event)">Reddit</button>
+    <button class="toggle-col-btn tipo-externo ativo"   data-col="col-alerts"    onclick="toggleColuna(this, event)">Google Alerts</button>
+    <button class="toggle-col-btn tipo-externo ativo"   data-col="col-agencia"   onclick="toggleColuna(this, event)">Agência Brasil</button>
+    <button class="toggle-col-btn tipo-externo ativo"   data-col="col-fapesp"    onclick="toggleColuna(this, event)">FAPESP</button>
+    <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-livros"    onclick="toggleColuna(this, event)">Livros USP</button>
+    <button class="toggle-col-btn tipo-ciencia ativo"   data-col="col-openalex"  onclick="toggleColuna(this, event)">OpenAlex</button>
+    <button class="toggle-col-btn tipo-pessoal ativo"   data-col="col-obitos"    onclick="toggleColuna(this, event)">Óbitos USP</button>
+    <button class="toggle-col-btn tipo-sindical ativo"  data-col="col-sintusp"   onclick="toggleColuna(this, event)">Sintusp</button>
+    <button class="toggle-col-btn tipo-sindical ativo"  data-col="col-adusp"     onclick="toggleColuna(this, event)">Adusp</button>
+    <button class="toggle-col-btn tipo-sindical ativo"  data-col="col-dce"       onclick="toggleColuna(this, event)">DCE (Instagram)</button>
     <button class="btn-dedup" id="btn-dedup" onclick="toggleDedup()">⇄ Ocultar duplicatas</button>
   </div>
   <div class="refresh-bar"><div class="refresh-bar-fill" id="refresh-bar-fill"></div></div>
@@ -1281,7 +1283,7 @@
       if (!window.location.hash) return;
       try {
         const state = JSON.parse(decodeURIComponent(atob(window.location.hash.slice(1))));
-        if (state.q) document.getElementById('campo-busca').value = state.q;
+        if (state.q) { document.getElementById('campo-busca').value = state.q; toggleBusca(true); }
         if (state.date) {
           dateFilter = state.date;
           document.querySelectorAll('.date-btn').forEach(b => {
@@ -1315,10 +1317,12 @@
       const emInput = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
       if (e.key === '/' && !emInput) {
         e.preventDefault();
+        toggleBusca(true);
         document.getElementById('campo-busca').focus();
       } else if (e.key === 'Escape') {
         document.getElementById('campo-busca').blur();
         if (document.getElementById('config-panel').classList.contains('aberto')) toggleConfig();
+        if (document.getElementById('busca-bar').classList.contains('aberto')) toggleBusca(false);
         limpar();
       } else if ((e.key === 'r' || e.key === 'R') && !emInput && !e.ctrlKey && !e.metaKey) {
         refreshManual();
@@ -1456,16 +1460,23 @@
         refreshColuna(colId);
       } else if (e?.shiftKey) {
         // Shift+clique → ocultar (respeitando mínimo de 1 coluna visível)
-        const ativos = document.querySelectorAll('.toggle-col-btn.ativo').length;
-        if (ativos <= 1) return;
-        col.classList.add('col-oculta'); btn.classList.remove('ativo');
-        const ocultas = [...document.querySelectorAll('.toggle-col-btn:not(.ativo)')].map(b => b.dataset.col);
-        localStorage.setItem(TOGGLE_KEY, JSON.stringify(ocultas));
-        atualizarURL();
+        ocultarColunaPorBtn(btn);
       } else {
         // Clique normal em coluna visível → rolar até ela
         col.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
+    }
+
+    function ocultarColunaPorBtn(btn) {
+      if (!btn.classList.contains('ativo')) return;
+      const ativos = document.querySelectorAll('.toggle-col-btn.ativo').length;
+      if (ativos <= 1) return;
+      const col = document.getElementById(btn.dataset.col);
+      if (col) col.classList.add('col-oculta');
+      btn.classList.remove('ativo');
+      const ocultas = [...document.querySelectorAll('.toggle-col-btn:not(.ativo)')].map(b => b.dataset.col);
+      localStorage.setItem(TOGGLE_KEY, JSON.stringify(ocultas));
+      atualizarURL();
     }
 
     const savedOcultas = localStorage.getItem(TOGGLE_KEY);
@@ -2063,6 +2074,14 @@
       const btn   = document.getElementById('btn-config');
       panel.classList.toggle('aberto');
       btn.classList.toggle('aberto', panel.classList.contains('aberto'));
+    }
+
+    function toggleBusca(forcarAberto) {
+      const bar = document.getElementById('busca-bar');
+      const btn = document.getElementById('btn-busca');
+      const aberto = forcarAberto === true ? true : (forcarAberto === false ? false : !bar.classList.contains('aberto'));
+      bar.classList.toggle('aberto', aberto);
+      btn.classList.toggle('aberto', aberto);
     }
 
     function aplicarConfig(btn) {
