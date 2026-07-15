@@ -1506,6 +1506,22 @@
       atualizarURL();
     }
 
+    // Migração única: entre 08/07 e 13/07/2026 um bug de CSS no modo 2 fileiras
+    // fazia uma coluna oculta continuar aparecendo na tela (só o botão ficava cinza),
+    // então cliques acidentais (ex.: Shift+clique) podiam ocultar "col-livros"/"col-obitos"
+    // sem o usuário perceber — e elas paravam de ser buscadas nos refreshes automáticos.
+    // Isso reativa essas duas colunas uma única vez para quem ficou com esse estado preso.
+    const MIGRACAO_OCULTAS_KEY = 'monitor-usp-migracao-ocultas-2026-07';
+    if (!localStorage.getItem(MIGRACAO_OCULTAS_KEY)) {
+      const ocultasAntesDaMigracao = JSON.parse(localStorage.getItem(TOGGLE_KEY) || '[]');
+      const colsParaReativar = ['col-livros', 'col-obitos'].filter(id => ocultasAntesDaMigracao.includes(id));
+      if (colsParaReativar.length) {
+        const novasOcultas = ocultasAntesDaMigracao.filter(id => !colsParaReativar.includes(id));
+        localStorage.setItem(TOGGLE_KEY, JSON.stringify(novasOcultas));
+      }
+      localStorage.setItem(MIGRACAO_OCULTAS_KEY, '1');
+    }
+
     const savedOcultas = localStorage.getItem(TOGGLE_KEY);
     if (savedOcultas) {
       JSON.parse(savedOcultas).forEach(colId => {
