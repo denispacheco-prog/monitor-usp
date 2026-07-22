@@ -7,27 +7,33 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
   <style>
     :root {
-      --bg-body: #f0f2f5;
-      --bg-header: #003063;
-      --text-header: #ffffff;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+      --bg-body: #faf9f6;
+      --bg: #faf9f6;
+      --text-main: #2b2a28;
+      --fg: #2b2a28;
+      --text-muted: #8a8579;
+      --border-color: #e6e3dc;
+      --accent: #0060df;
+
+      --bg-header: var(--bg-body);
+      --text-header: var(--text-main);
       --bg-coluna: #ffffff;
-      --text-main: #333333;
-      --border-color: #e2e8f0;
-      --border-header: #003063;
-      --bg-item-hover: #f8fafc;
-      --link-color: #003063;
-      --text-muted: #64748b;
-      --bg-count: #e2e8f0;
-      --text-count: #334155;
+      --border-header: var(--border-color);
+      --bg-item-hover: #f3f1ec;
+      --link-color: var(--accent);
+      --bg-count: #efece5;
+      --text-count: #6b6659;
       --bg-busca: #ffffff;
-      --cat-oficial: #003063;
-      --cat-externo: #e65100;
-      --cat-ciencia: #00796b;
-      --cat-pessoal: #7c3aed;
-      --cat-sindical: #dc2626;
-      --jornal-bg: #f0f4fa;
-      --jornal-header-bg: #e8eef8;
-      --jornal-border: #003063;
+      --cat-oficial: #8a5a34;
+      --cat-externo: #b4530f;
+      --cat-ciencia: #6f7a37;
+      --cat-pessoal: #8c5a72;
+      --cat-sindical: #af4234;
+      --jornal-bg: #f5f2ea;
+      --jornal-header-bg: #efe9dc;
+      --jornal-border: #8a5a34;
       --jornal-img-radius: 6px;
       --col-width: 300px;
       --item-padding-v: 10px;
@@ -38,37 +44,41 @@
     }
 
     body.dark-theme {
-      --bg-body: #000000;
-      --bg-header: #0d0d0d;
-      --text-header: #f1f5f9;
-      --bg-coluna: #111111;
-      --text-main: #e2e8f0;
-      --border-color: #2a2a2a;
-      --border-header: #2a2a2a;
-      --bg-item-hover: #1a1a1a;
-      --link-color: #58a6ff;
-      --text-muted: #8b949e;
-      --bg-count: #1a1a1a;
-      --text-count: #8b949e;
-      --bg-busca: #0d0d0d;
-      --cat-oficial: #58a6ff;
-      --cat-externo: #ff9800;
-      --cat-ciencia: #4db6ac;
-      --cat-pessoal: #c084fc;
-      --cat-sindical: #f87171;
-      --jornal-bg: #0a0a0a;
-      --jornal-header-bg: #111111;
-      --jornal-border: #58a6ff;
+      --bg-body: #221f1c;
+      --bg: #221f1c;
+      --text-main: #e8e4dc;
+      --fg: #e8e4dc;
+      --text-muted: #9c968a;
+      --border-color: #3a362f;
+      --accent: #6ea8fe;
+
+      --bg-header: var(--bg-body);
+      --text-header: var(--text-main);
+      --bg-coluna: #29251f;
+      --border-header: var(--border-color);
+      --bg-item-hover: #2e2a24;
+      --link-color: var(--accent);
+      --bg-count: #322e27;
+      --text-count: #b8b2a4;
+      --bg-busca: #26221d;
+      --cat-oficial: #c9a06a;
+      --cat-externo: #d9843f;
+      --cat-ciencia: #a3b273;
+      --cat-pessoal: #c191a8;
+      --cat-sindical: #d9846f;
+      --jornal-bg: #27231d;
+      --jornal-header-bg: #2c2822;
+      --jornal-border: #c9a06a;
     }
 
-    body.dark-theme .item a { color: #ffffff !important; }
+    body.dark-theme .item a { color: var(--text-main) !important; }
 
-    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: var(--bg-body); margin: 0; color: var(--text-main); transition: background-color 0.3s, color 0.3s; }
+    body { font-family: var(--font-sans); background-color: var(--bg-body); margin: 0; color: var(--text-main); transition: background-color 0.3s, color 0.3s; }
 
-    header { background-color: var(--bg-header); color: var(--text-header); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; transition: background-color 0.3s; border-bottom: 1px solid rgba(255,255,255,0.08); }
-    header h1 { margin: 0; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; letter-spacing: -0.01em; }
+    header { background-color: var(--bg-header); color: var(--text-header); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; transition: background-color 0.3s; border-bottom: 1px solid var(--border-color); }
+    header h1 { margin: 0; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; letter-spacing: -0.01em; }
 
-    .header-monitor { display: flex; align-items: center; gap: 6px; font-size: 11px; color: rgba(255,255,255,0.55); flex: 1; padding: 0 20px; }
+    .header-monitor { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); flex: 1; padding: 0 20px; }
     .monitor-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; flex-shrink: 0; box-shadow: 0 0 0 0 rgba(74,222,128,0.5); }
     .monitor-dot.pulsando { animation: pulse-dot 1s ease-in-out infinite; }
     .monitor-dot.carregando { background: #fbbf24; animation: pulse-dot 0.6s ease-in-out infinite; }
@@ -78,26 +88,27 @@
       70%  { box-shadow: 0 0 0 6px rgba(74,222,128,0); }
       100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
     }
-    .monitor-status { color: rgba(255,255,255,0.7); font-weight: 500; }
-    .monitor-sep { opacity: 0.3; }
+    .monitor-status { color: var(--text-main); font-weight: 500; }
+    .monitor-sep { opacity: 0.4; }
     .monitor-countdown { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
 
     .btn-header-icon {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.18);
-      color: var(--text-header);
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
       width: 28px; height: 28px;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13px;
       line-height: 1;
-      transition: background 0.2s, transform 0.3s;
+      transition: background 0.2s, color 0.15s, transform 0.3s;
       display: flex; align-items: center; justify-content: center;
     }
-    .btn-header-icon:hover { background: rgba(255,255,255,0.18); }
+    .btn-header-icon:hover { background: var(--bg-item-hover); color: var(--text-main); }
     .btn-header-icon.girando { animation: girar 0.8s linear; }
-    .btn-header-icon.notif-ativo { background: rgba(251,191,36,0.3); border-color: rgba(251,191,36,0.6); }
+    .btn-header-icon.notif-ativo { background: var(--bg-item-hover); border-color: var(--accent); color: var(--accent); }
     .btn-header-icon.notif-negado { opacity: 0.4; cursor: not-allowed; }
+    #btn-notif { width: auto; padding: 0 9px; font-size: 11px; font-weight: 600; }
     @keyframes girar { to { transform: rotate(360deg); } }
 
     .col-status-icon { font-size: 10px; margin-left: 4px; opacity: 0.7; cursor: pointer; transition: opacity 0.2s; }
@@ -111,8 +122,8 @@
     .btn-col-refresh:hover, .btn-marcar-lidos:hover { opacity: 1 !important; color: var(--link-color); }
     .btn-col-refresh.girando { animation: girar 0.7s linear; }
 
-    .badge-novo { display: inline-block; background: #22c55e; color: #fff; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 10px; margin-left: 5px; letter-spacing: 0.02em; animation: fade-in-badge 0.4s ease; }
-    .badge-nao-lido { display: inline-block; background: #3b82f6; color: #fff; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 10px; margin-left: 4px; letter-spacing: 0.02em; }
+    .badge-novo { display: inline-block; background: #6b8f5e; color: #fff; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 10px; margin-left: 5px; letter-spacing: 0.02em; animation: fade-in-badge 0.4s ease; }
+    .badge-nao-lido { display: inline-block; background: var(--accent); color: #fff; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 10px; margin-left: 4px; letter-spacing: 0.02em; }
     @keyframes fade-in-badge {
       from { opacity: 0; transform: scale(0.7); }
       to   { opacity: 1; transform: scale(1); }
@@ -121,12 +132,12 @@
     .coluna.atualizando .coluna-body { opacity: 0.5; transition: opacity 0.3s; }
     .coluna .coluna-body { transition: opacity 0.3s; }
 
-    .btn-theme { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); color: var(--text-header); padding: 5px 11px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: background 0.2s; }
-    .btn-theme:hover { background: rgba(255,255,255,0.16); }
+    .btn-theme { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 5px 11px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: background 0.2s, color 0.15s; }
+    .btn-theme:hover { background: var(--bg-item-hover); color: var(--text-main); }
 
-    .btn-config { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); color: var(--text-header); padding: 5px 11px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: background 0.2s; display: flex; align-items: center; gap: 5px; }
-    .btn-config:hover  { background: rgba(255,255,255,0.16); }
-    .btn-config.aberto { background: rgba(255,255,255,0.22); }
+    .btn-config { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 5px 11px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: background 0.2s, color 0.15s; display: flex; align-items: center; gap: 5px; }
+    .btn-config:hover  { background: var(--bg-item-hover); color: var(--text-main); }
+    .btn-config.aberto { background: var(--bg-item-hover); border-color: var(--accent); color: var(--accent); }
 
     .header-actions { display: flex; align-items: center; gap: 8px; }
 
@@ -144,32 +155,32 @@
     .config-opcoes { display: flex; gap: 5px; align-items: center; }
     .config-btn { padding: 4px 11px; border-radius: 5px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-muted); font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
     .config-btn:hover  { border-color: var(--link-color); color: var(--link-color); }
-    .config-btn.ativo  { background: var(--link-color); color: #fff; border-color: var(--link-color); }
+    .config-btn.ativo  { background: color-mix(in srgb, var(--link-color) 14%, transparent); color: var(--link-color); border-color: color-mix(in srgb, var(--link-color) 45%, transparent); }
     .config-slider-wrap { display: flex; align-items: center; gap: 8px; }
     .config-slider-wrap span { font-size: 11px; color: var(--text-muted); width: 44px; text-align: right; }
     input[type=range].config-range { -webkit-appearance: none; appearance: none; width: 140px; height: 4px; border-radius: 2px; background: var(--border-color); outline: none; cursor: pointer; }
     input[type=range].config-range::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--link-color); cursor: pointer; }
     .config-reset { margin-left: auto; font-size: 11px; color: var(--text-muted); background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 4px; transition: color 0.15s, background 0.15s; font-family: inherit; align-self: flex-end; }
-    .config-reset:hover { color: var(--cat-externo); background: rgba(230,81,0,0.07); }
+    .config-reset:hover { color: var(--cat-externo); background: color-mix(in srgb, var(--cat-externo) 10%, transparent); }
 
     .busca-bar { background: var(--bg-busca); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; overflow: hidden; max-height: 0; padding: 0 20px; transition: background-color 0.3s, max-height 0.25s ease, padding 0.25s ease; }
     .busca-bar.aberto { max-height: 120px; padding: 8px 20px; }
     .busca-bar label { font-size: 12px; font-weight: 600; color: var(--link-color); white-space: nowrap; }
     .busca-bar input { flex: 1; min-width: 160px; max-width: 320px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-main); border-radius: 5px; padding: 5px 10px; font-size: 13px; outline: none; transition: border-color 0.2s; font-family: inherit; }
     .busca-bar input:focus { border-color: var(--link-color); }
-    .busca-bar button { background: var(--border-header); color: #fff; border: none; border-radius: 5px; padding: 5px 14px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; font-family: inherit; }
+    .busca-bar button { background: var(--accent); color: #fff; border: none; border-radius: 5px; padding: 5px 14px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; font-family: inherit; }
     .busca-bar button:hover { opacity: 0.85; }
     .btn-limpar { background: transparent !important; color: var(--text-muted) !important; border: 1px solid var(--border-color) !important; font-weight: normal !important; }
 
     .bar-sep { width: 1px; height: 18px; background: var(--border-color); flex-shrink: 0; margin: 0 2px; }
 
-    .date-btn { font-size: 11px; padding: 4px 9px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-muted); cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap; }
+    .busca-bar .date-btn { font-size: 11px; padding: 4px 9px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-muted); cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap; }
     .date-btn:hover { border-color: var(--link-color); color: var(--link-color); }
-    .date-btn.ativo { background: var(--link-color); color: #fff; border-color: var(--link-color); }
+    .date-btn.ativo { background: color-mix(in srgb, var(--link-color) 14%, transparent); color: var(--link-color); border-color: color-mix(in srgb, var(--link-color) 45%, transparent); }
 
-    .btn-copiar-link { font-size: 11px; padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-muted); cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap; }
+    .busca-bar .btn-copiar-link { font-size: 11px; padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-muted); cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap; }
     .btn-copiar-link:hover { border-color: var(--link-color); color: var(--link-color); }
-    .btn-copiar-link.copiado { background: #22c55e; color: #fff; border-color: #22c55e; }
+    .btn-copiar-link.copiado { background: color-mix(in srgb, #6b8f5e 16%, transparent); color: #6b8f5e; border-color: color-mix(in srgb, #6b8f5e 45%, transparent); }
 
     .resultado-bar { display: none; background: #fffbe6; border-bottom: 1px solid #ffe082; padding: 8px 24px; font-size: 13px; color: #7a6000; gap: 8px; align-items: center; }
     body.dark-theme .resultado-bar { background: #332b00; border-color: #665600; color: #ffeb82; }
@@ -220,7 +231,7 @@
 
     .coluna-header { padding: 10px 13px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; cursor: grab; user-select: none; }
     .coluna-header:active { cursor: grabbing; }
-    .coluna-header h2 { margin: 0; font-size: 12px; pointer-events: none; font-weight: 700; letter-spacing: 0.01em; text-transform: uppercase; }
+    .coluna-header h2 { margin: 0; font-size: 13px; pointer-events: none; font-weight: 600; letter-spacing: -0.005em; }
     .coluna-count { font-size: 10px; background: var(--bg-count); color: var(--text-count); padding: 2px 7px; border-radius: 20px; font-weight: 700; pointer-events: none; }
     .coluna-body { max-height: var(--col-max-height); overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; scrollbar-color: var(--border-color) transparent; }
 
@@ -269,27 +280,27 @@
     .fav-filtro-bar { padding: 7px 10px; display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--border-color); background: var(--bg-coluna); flex-shrink: 0; }
     .fav-filtro-btn { font-size: 10px; font-weight: 600; font-family: inherit; padding: 2px 8px; border-radius: 10px; border: 1.5px solid var(--border-color); background: var(--bg-body); color: var(--text-muted); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
     .fav-filtro-btn:hover { border-color: var(--link-color); color: var(--link-color); }
-    .fav-filtro-btn.ativo { color: #fff; border-color: transparent; }
-    .fav-filtro-btn.ativo[data-filter="todos"]    { background: #64748b; }
-    .fav-filtro-btn.ativo[data-filter="Bluesky"]  { background: #1185fe; }
-    .fav-filtro-btn.ativo[data-filter="Threads"]  { background: #101010; }
-    .fav-filtro-btn.ativo[data-filter="LinkedIn"] { background: #0077b5; }
-    .fav-filtro-btn.ativo[data-filter="Atenção"]  { background: #ef4444; }
-    .fav-filtro-btn.ativo[data-filter="Pauta"]    { background: #7c3aed; }
-    body.dark-theme .fav-filtro-btn.ativo[data-filter="Threads"] { background: #555; }
+    .fav-filtro-btn.ativo { border-color: transparent; }
+    .fav-filtro-btn.ativo[data-filter="todos"]    { background: color-mix(in srgb, var(--text-muted) 16%, transparent); color: var(--text-main); }
+    .fav-filtro-btn.ativo[data-filter="Bluesky"]  { background: color-mix(in srgb, #1185fe 16%, transparent); color: #1185fe; }
+    .fav-filtro-btn.ativo[data-filter="Threads"]  { background: color-mix(in srgb, var(--text-main) 16%, transparent); color: var(--text-main); }
+    .fav-filtro-btn.ativo[data-filter="LinkedIn"] { background: color-mix(in srgb, #0077b5 16%, transparent); color: #0077b5; }
+    .fav-filtro-btn.ativo[data-filter="Atenção"]  { background: color-mix(in srgb, #b3402f 16%, transparent); color: #b3402f; }
+    .fav-filtro-btn.ativo[data-filter="Pauta"]    { background: color-mix(in srgb, var(--cat-pessoal) 16%, transparent); color: var(--cat-pessoal); }
+    body.dark-theme .fav-filtro-btn.ativo[data-filter="Atenção"] { color: #d9846f; background: color-mix(in srgb, #d9846f 18%, transparent); }
 
     /* FAVORITOS: TAGS POR ITEM */
     .fav-tags { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 6px; }
-    .fav-tag { display: inline-flex; align-items: center; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; cursor: pointer; user-select: none; border: none; transition: opacity 0.15s, transform 0.1s; opacity: 0.28; color: #fff; font-family: inherit; line-height: 1.4; }
+    .fav-tag { display: inline-flex; align-items: center; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; cursor: pointer; user-select: none; border: 1px solid transparent; transition: opacity 0.15s, transform 0.1s; opacity: 0.35; font-family: inherit; line-height: 1.4; }
     .fav-tag.ativo { opacity: 1; }
-    .fav-tag:not(.ativo):hover { opacity: 0.6; }
+    .fav-tag:not(.ativo):hover { opacity: 0.7; }
     .fav-tag:active { transform: scale(0.94); }
-    .fav-tag[data-tag="Bluesky"]  { background: #1185fe; }
-    .fav-tag[data-tag="Threads"]  { background: #101010; }
-    body.dark-theme .fav-tag[data-tag="Threads"] { background: #555; }
-    .fav-tag[data-tag="LinkedIn"] { background: #0077b5; }
-    .fav-tag[data-tag="Atenção"]  { background: #ef4444; }
-    .fav-tag[data-tag="Pauta"]    { background: #7c3aed; }
+    .fav-tag[data-tag="Bluesky"]  { background: color-mix(in srgb, #1185fe 16%, transparent); color: #1185fe; }
+    .fav-tag[data-tag="Threads"]  { background: color-mix(in srgb, var(--text-main) 16%, transparent); color: var(--text-main); }
+    .fav-tag[data-tag="LinkedIn"] { background: color-mix(in srgb, #0077b5 16%, transparent); color: #0077b5; }
+    .fav-tag[data-tag="Atenção"]  { background: color-mix(in srgb, #b3402f 16%, transparent); color: #b3402f; }
+    body.dark-theme .fav-tag[data-tag="Atenção"] { color: #d9846f; background: color-mix(in srgb, #d9846f 18%, transparent); }
+    .fav-tag[data-tag="Pauta"]    { background: color-mix(in srgb, var(--cat-pessoal) 16%, transparent); color: var(--cat-pessoal); }
 
     /* FAVORITOS: NOTA */
     .fav-nota-wrap { margin-top: 5px; }
@@ -308,14 +319,14 @@
     body.dark-theme .cache-aviso { background: #2a2000; border-color: #554800; color: #d4aa40; }
 
     /* DUPLICATE */
-    .item-duplicata { border-left: 3px solid #94a3b8; padding-left: calc(var(--item-padding-h) - 3px); }
-    .dup-info { font-size: 9px; color: #94a3b8; margin-top: 2px; }
+    .item-duplicata { border-left: 3px solid var(--text-muted); padding-left: calc(var(--item-padding-h) - 3px); }
+    .dup-info { font-size: 9px; color: var(--text-muted); margin-top: 2px; }
     .item-duplicata.oculto-dup { display: none !important; }
 
     /* DEDUP BUTTON */
     .btn-dedup { font-size: 11px; padding: 3px 9px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-muted); cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap; margin-left: auto; }
     .btn-dedup:hover { border-color: var(--link-color); color: var(--link-color); }
-    .btn-dedup.ativo { background: #64748b; color: #fff; border-color: transparent; }
+    .btn-dedup.ativo { background: color-mix(in srgb, var(--text-muted) 18%, transparent); color: var(--text-main); border-color: transparent; }
 
     mark { background: #ffeb3b; color: #000; border-radius: 2px; padding: 0 2px; }
     .coluna.col-oculta { display: none; }
@@ -327,18 +338,18 @@
     .colunas::-webkit-scrollbar { height: 6px; }
     .colunas::-webkit-scrollbar-track { background: transparent; }
     .colunas::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
-    .toggle-bar label { font-size: 11px; font-weight: 700; color: var(--text-muted); white-space: nowrap; margin-right: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .toggle-bar label { font-size: 11px; font-weight: 600; color: var(--text-muted); white-space: nowrap; margin-right: 2px; }
     .refresh-bar { height: 2px; background: var(--border-color); overflow: hidden; }
     .refresh-bar-fill { height: 100%; width: 0%; background: var(--link-color); transition: width 1s linear; opacity: 0.6; }
 
     .toggle-col-btn { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 9px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-muted); cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s, opacity 0.15s; user-select: none; font-family: inherit; font-weight: 500; }
-    .toggle-col-btn.ativo { background: var(--border-header); color: #fff; border-color: transparent; opacity: 1; }
-    .toggle-col-btn.ativo.tipo-externo  { background: var(--cat-externo); }
-    .toggle-col-btn.ativo.tipo-ciencia  { background: var(--cat-ciencia); }
-    .toggle-col-btn.ativo.tipo-oficial  { background: var(--cat-oficial); }
-    .toggle-col-btn.ativo.tipo-favoritos { background: #d97706; }
-    .toggle-col-btn.ativo.tipo-pessoal  { background: var(--cat-pessoal); }
-    .toggle-col-btn.ativo.tipo-sindical { background: var(--cat-sindical); }
+    .toggle-col-btn.ativo { background: color-mix(in srgb, var(--text-muted) 14%, transparent); color: var(--text-main); border-color: transparent; opacity: 1; }
+    .toggle-col-btn.ativo.tipo-externo  { background: color-mix(in srgb, var(--cat-externo) 16%, transparent); color: var(--cat-externo); }
+    .toggle-col-btn.ativo.tipo-ciencia  { background: color-mix(in srgb, var(--cat-ciencia) 16%, transparent); color: var(--cat-ciencia); }
+    .toggle-col-btn.ativo.tipo-oficial  { background: color-mix(in srgb, var(--cat-oficial) 16%, transparent); color: var(--cat-oficial); }
+    .toggle-col-btn.ativo.tipo-favoritos { background: color-mix(in srgb, #d97706 16%, transparent); color: #d97706; }
+    .toggle-col-btn.ativo.tipo-pessoal  { background: color-mix(in srgb, var(--cat-pessoal) 16%, transparent); color: var(--cat-pessoal); }
+    .toggle-col-btn.ativo.tipo-sindical { background: color-mix(in srgb, var(--cat-sindical) 16%, transparent); color: var(--cat-sindical); }
     .toggle-col-btn:not(.ativo) { opacity: 0.45; }
     .toggle-col-btn:hover { opacity: 1; }
     .toggle-col-btn { cursor: grab; }
@@ -351,15 +362,14 @@
     .sem-resultado.visivel { display: block; }
 
     /* TOAST */
-    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(10px); background: #1e293b; color: #f8fafc; padding: 8px 18px; border-radius: 6px; font-size: 12px; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s; z-index: 9999; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-    body.dark-theme .toast { background: #f8fafc; color: #1e293b; }
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(10px); background: var(--text-main); color: var(--bg-body); padding: 8px 18px; border-radius: 6px; font-size: 12px; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s; z-index: 9999; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
     .toast.visivel { opacity: 1; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>📡 Monitor USP</h1>
+    <h1>Monitor USP</h1>
     <div class="header-monitor">
       <span class="monitor-dot" id="monitor-dot"></span>
       <span class="monitor-status" id="monitor-status">Inicializando...</span>
@@ -368,10 +378,10 @@
     </div>
     <div class="header-actions">
       <button id="btn-refresh-all" class="btn-header-icon" onclick="refreshManual()" title="Atualizar tudo agora (R)">↻</button>
-      <button id="btn-notif" class="btn-header-icon" onclick="toggleNotificacoes()" title="Ativar notificações">🔕</button>
-      <button id="theme-toggle" class="btn-theme">🌙 Escuro</button>
-      <button id="btn-busca" class="btn-config" onclick="toggleBusca()">🔍 Buscar</button>
-      <button id="btn-config" class="btn-config" onclick="toggleConfig()">⚙️ Layout</button>
+      <button id="btn-notif" class="btn-header-icon" onclick="toggleNotificacoes()" title="Ativar notificações">Notif.</button>
+      <button id="theme-toggle" class="btn-theme">Modo Escuro</button>
+      <button id="btn-busca" class="btn-config" onclick="toggleBusca()">Buscar</button>
+      <button id="btn-config" class="btn-config" onclick="toggleConfig()">Layout</button>
     </div>
   </header>
 
@@ -418,23 +428,23 @@
         <label>Cores das categorias</label>
         <div class="config-color-row">
           <label class="config-color-item" title="Cor dos canais oficiais USP">
-            <input type="color" class="cor-picker" id="cor-oficial" value="#003063" oninput="aoMudarCor('oficial',this.value)">
+            <input type="color" class="cor-picker" id="cor-oficial" value="#8a5a34" oninput="aoMudarCor('oficial',this.value)">
             <span>Oficial</span>
           </label>
           <label class="config-color-item" title="Cor das fontes externas">
-            <input type="color" class="cor-picker" id="cor-externo" value="#e65100" oninput="aoMudarCor('externo',this.value)">
+            <input type="color" class="cor-picker" id="cor-externo" value="#b4530f" oninput="aoMudarCor('externo',this.value)">
             <span>Externo</span>
           </label>
           <label class="config-color-item" title="Cor das colunas de ciência">
-            <input type="color" class="cor-picker" id="cor-ciencia" value="#00796b" oninput="aoMudarCor('ciencia',this.value)">
+            <input type="color" class="cor-picker" id="cor-ciencia" value="#6f7a37" oninput="aoMudarCor('ciencia',this.value)">
             <span>Ciência</span>
           </label>
           <label class="config-color-item" title="Cor das colunas pessoais">
-            <input type="color" class="cor-picker" id="cor-pessoal" value="#7c3aed" oninput="aoMudarCor('pessoal',this.value)">
+            <input type="color" class="cor-picker" id="cor-pessoal" value="#8c5a72" oninput="aoMudarCor('pessoal',this.value)">
             <span>Pessoal</span>
           </label>
           <label class="config-color-item" title="Cor das colunas sindicais/movimento">
-            <input type="color" class="cor-picker" id="cor-sindical" value="#dc2626" oninput="aoMudarCor('sindical',this.value)">
+            <input type="color" class="cor-picker" id="cor-sindical" value="#af4234" oninput="aoMudarCor('sindical',this.value)">
             <span>Sindical</span>
           </label>
           <button class="config-reset" onclick="resetarCores()" style="margin-left:2px; align-self:center;" title="Restaurar cores padrão">↺ Cores</button>
@@ -445,17 +455,17 @@
   </div>
 
   <div class="busca-bar" id="busca-bar">
-    <label>🔍 Filtrar:</label>
+    <label>Filtrar:</label>
     <input type="text" id="campo-busca" placeholder="Palavra-chave e Enter... (atalho: /)" />
     <button onclick="aplicarFiltros()">Buscar</button>
-    <button class="btn-limpar" onclick="limpar()">✕ Limpar</button>
+    <button class="btn-limpar" onclick="limpar()">Limpar</button>
     <div class="bar-sep"></div>
     <button class="date-btn ativo" data-date="todos"  onclick="setDateFilter(this)">Todos</button>
     <button class="date-btn"       data-date="hoje"   onclick="setDateFilter(this)">Hoje</button>
     <button class="date-btn"       data-date="7d"     onclick="setDateFilter(this)">7 dias</button>
     <button class="date-btn"       data-date="30d"    onclick="setDateFilter(this)">30 dias</button>
     <div class="bar-sep"></div>
-    <button class="btn-copiar-link" id="btn-copiar-link" onclick="copiarLink()">🔗 Copiar link</button>
+    <button class="btn-copiar-link" id="btn-copiar-link" onclick="copiarLink()">Copiar link</button>
   </div>
 
   <div class="resultado-bar" id="resultado-bar">
@@ -464,7 +474,7 @@
   </div>
 
   <div class="toggle-bar" id="toggle-bar">
-    <label>📋 Colunas:</label>
+    <label>Colunas:</label>
     <button class="toggle-col-btn tipo-favoritos ativo" data-col="col-favoritos" onclick="toggleColuna(this, event)">Favoritos</button>
     <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-rss"       onclick="toggleColuna(this, event)">Jornal USP</button>
     <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-bsky"      onclick="toggleColuna(this, event)">Bluesky</button>
@@ -491,7 +501,7 @@
     <div class="coluna tipo-favoritos col-fixa" id="col-favoritos" draggable="true">
       <div class="resize-handle"></div>
       <div class="coluna-header">
-        <h2>⭐ Favoritos <span class="col-status-icon" id="status-col-favoritos"></span></h2>
+        <h2>Favoritos <span class="col-status-icon" id="status-col-favoritos"></span></h2>
         <div style="display:flex;align-items:center;gap:4px">
           <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-favoritos')" title="Marcar todos como lidos">✓</button>
           <span class="coluna-count" id="count-favoritos">—</span>
@@ -499,11 +509,11 @@
       </div>
       <div class="fav-filtro-bar" id="fav-filtro-bar">
         <button class="fav-filtro-btn ativo" data-filter="todos"    onclick="setFiltroTag(this)">Todos</button>
-        <button class="fav-filtro-btn"       data-filter="Bluesky"  onclick="setFiltroTag(this)">🦋 Bluesky</button>
-        <button class="fav-filtro-btn"       data-filter="Threads"  onclick="setFiltroTag(this)">🧵 Threads</button>
-        <button class="fav-filtro-btn"       data-filter="LinkedIn" onclick="setFiltroTag(this)">💼 LinkedIn</button>
-        <button class="fav-filtro-btn"       data-filter="Atenção"  onclick="setFiltroTag(this)">🚨 Atenção</button>
-        <button class="fav-filtro-btn"       data-filter="Pauta"    onclick="setFiltroTag(this)">📋 Pauta</button>
+        <button class="fav-filtro-btn"       data-filter="Bluesky"  onclick="setFiltroTag(this)">Bluesky</button>
+        <button class="fav-filtro-btn"       data-filter="Threads"  onclick="setFiltroTag(this)">Threads</button>
+        <button class="fav-filtro-btn"       data-filter="LinkedIn" onclick="setFiltroTag(this)">LinkedIn</button>
+        <button class="fav-filtro-btn"       data-filter="Atenção"  onclick="setFiltroTag(this)">Atenção</button>
+        <button class="fav-filtro-btn"       data-filter="Pauta"    onclick="setFiltroTag(this)">Pauta</button>
       </div>
       <div class="coluna-body">
         <div id="favoritos-container"></div>
@@ -514,7 +524,7 @@
     <div class="coluna tipo-oficial jornal-usp col-fixa" id="col-rss" draggable="true">
       <div class="resize-handle"></div>
       <div class="coluna-header">
-        <h2>🗞️ Jornal da USP <span class="col-status-icon" id="status-col-rss"></span></h2>
+        <h2>Jornal da USP <span class="col-status-icon" id="status-col-rss"></span></h2>
         <div style="display:flex;align-items:center;gap:4px">
           <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-rss')" title="Marcar todos como lidos">✓</button>
           <button class="btn-col-refresh" id="refresh-col-rss" onclick="refreshColuna('col-rss')" title="Atualizar coluna">↻</button>
@@ -531,7 +541,7 @@
     <div class="coluna tipo-oficial" id="col-bsky" draggable="true">
       <div class="resize-handle"></div>
       <div class="coluna-header">
-        <h2>🦋 Bluesky <span class="col-status-icon" id="status-col-bsky"></span></h2>
+        <h2>Bluesky <span class="col-status-icon" id="status-col-bsky"></span></h2>
         <div style="display:flex;align-items:center;gap:4px">
           <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-bsky')" title="Marcar todos como lidos">✓</button>
           <button class="btn-col-refresh" id="refresh-col-bsky" onclick="refreshColuna('col-bsky')" title="Atualizar coluna">↻</button>
@@ -548,7 +558,7 @@
     <div class="coluna tipo-oficial" id="col-yt" draggable="true">
       <div class="resize-handle"></div>
       <div class="coluna-header">
-        <h2>▶️ YouTube <span class="col-status-icon" id="status-col-yt"></span></h2>
+        <h2>YouTube <span class="col-status-icon" id="status-col-yt"></span></h2>
         <div style="display:flex;align-items:center;gap:4px">
           <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-yt')" title="Marcar todos como lidos">✓</button>
           <button class="btn-col-refresh" id="refresh-col-yt" onclick="refreshColuna('col-yt')" title="Atualizar coluna">↻</button>
@@ -565,7 +575,7 @@
     <div class="coluna tipo-externo" id="col-reddit" draggable="true">
       <div class="resize-handle"></div>
       <div class="coluna-header">
-        <h2>💬 Reddit (r/USP) <span class="col-status-icon" id="status-col-reddit"></span></h2>
+        <h2>Reddit (r/USP) <span class="col-status-icon" id="status-col-reddit"></span></h2>
         <div style="display:flex;align-items:center;gap:4px">
           <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-reddit')" title="Marcar todos como lidos">✓</button>
           <button class="btn-col-refresh" id="refresh-col-reddit" onclick="refreshColuna('col-reddit')" title="Atualizar coluna">↻</button>
@@ -582,7 +592,7 @@
     <div class="coluna tipo-externo" id="col-alerts" draggable="true">
       <div class="resize-handle"></div>
       <div class="coluna-header">
-        <h2>🔔 Google Alerts <span class="col-status-icon" id="status-col-alerts"></span></h2>
+        <h2>Google Alerts <span class="col-status-icon" id="status-col-alerts"></span></h2>
         <div style="display:flex;align-items:center;gap:4px">
           <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-alerts')" title="Marcar todos como lidos">✓</button>
           <button class="btn-col-refresh" id="refresh-col-alerts" onclick="refreshColuna('col-alerts')" title="Atualizar coluna">↻</button>
@@ -599,7 +609,7 @@
     <div class="coluna tipo-externo" id="col-agencia" draggable="true">
       <div class="resize-handle"></div>
       <div class="coluna-header">
-        <h2>📡 Agência Brasil <span class="col-status-icon" id="status-col-agencia"></span></h2>
+        <h2>Agência Brasil <span class="col-status-icon" id="status-col-agencia"></span></h2>
         <div style="display:flex;align-items:center;gap:4px">
           <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-agencia')" title="Marcar todos como lidos">✓</button>
           <button class="btn-col-refresh" id="refresh-col-agencia" onclick="refreshColuna('col-agencia')" title="Atualizar coluna">↻</button>
@@ -616,7 +626,7 @@
     <div class="coluna tipo-externo" id="col-fapesp" draggable="true">
       <div class="resize-handle"></div>
       <div class="coluna-header">
-        <h2>🔬 Agência FAPESP <span class="col-status-icon" id="status-col-fapesp"></span></h2>
+        <h2>Agência FAPESP <span class="col-status-icon" id="status-col-fapesp"></span></h2>
         <div style="display:flex;align-items:center;gap:4px">
           <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-fapesp')" title="Marcar todos como lidos">✓</button>
           <button class="btn-col-refresh" id="refresh-col-fapesp" onclick="refreshColuna('col-fapesp')" title="Atualizar coluna">↻</button>
@@ -633,7 +643,7 @@
     <div class="coluna tipo-ciencia" id="col-livros" draggable="true">
       <div class="resize-handle"></div>
       <div class="coluna-header">
-        <h2>📚 Livros USP <span class="col-status-icon" id="status-col-livros"></span></h2>
+        <h2>Livros USP <span class="col-status-icon" id="status-col-livros"></span></h2>
         <div style="display:flex;align-items:center;gap:4px">
           <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-livros')" title="Marcar todos como lidos">✓</button>
           <button class="btn-col-refresh" id="refresh-col-livros" onclick="refreshColuna('col-livros')" title="Atualizar coluna">↻</button>
@@ -650,7 +660,7 @@
     <div class="coluna tipo-ciencia" id="col-openalex" draggable="true">
       <div class="resize-handle"></div>
       <div class="coluna-header">
-        <h2>🔭 OpenAlex — USP <span class="col-status-icon" id="status-col-openalex"></span></h2>
+        <h2>OpenAlex — USP <span class="col-status-icon" id="status-col-openalex"></span></h2>
         <div style="display:flex;align-items:center;gap:4px">
           <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-openalex')" title="Marcar todos como lidos">✓</button>
           <button class="btn-col-refresh" id="refresh-col-openalex" onclick="refreshColuna('col-openalex')" title="Atualizar coluna">↻</button>
@@ -667,7 +677,7 @@
     <div class="coluna tipo-pessoal" id="col-obitos" draggable="true">
       <div class="resize-handle"></div>
       <div class="coluna-header">
-        <h2>🕯️ Óbitos USP <span class="col-status-icon" id="status-col-obitos"></span></h2>
+        <h2>Óbitos USP <span class="col-status-icon" id="status-col-obitos"></span></h2>
         <div style="display:flex;align-items:center;gap:4px">
           <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-obitos')" title="Marcar todos como lidos">✓</button>
           <button class="btn-col-refresh" id="refresh-col-obitos" onclick="refreshColuna('col-obitos')" title="Atualizar coluna">↻</button>
@@ -684,7 +694,7 @@
     <div class="coluna tipo-sindical" id="col-sintusp" draggable="true">
       <div class="resize-handle"></div>
       <div class="coluna-header">
-        <h2>🚩 Sintusp <span class="col-status-icon" id="status-col-sintusp"></span></h2>
+        <h2>Sintusp <span class="col-status-icon" id="status-col-sintusp"></span></h2>
         <div style="display:flex;align-items:center;gap:4px">
           <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-sintusp')" title="Marcar todos como lidos">✓</button>
           <button class="btn-col-refresh" id="refresh-col-sintusp" onclick="refreshColuna('col-sintusp')" title="Atualizar coluna">↻</button>
@@ -701,7 +711,7 @@
     <div class="coluna tipo-sindical" id="col-adusp" draggable="true">
       <div class="resize-handle"></div>
       <div class="coluna-header">
-        <h2>🚩 Adusp <span class="col-status-icon" id="status-col-adusp"></span></h2>
+        <h2>Adusp <span class="col-status-icon" id="status-col-adusp"></span></h2>
         <div style="display:flex;align-items:center;gap:4px">
           <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-adusp')" title="Marcar todos como lidos">✓</button>
           <button class="btn-col-refresh" id="refresh-col-adusp" onclick="refreshColuna('col-adusp')" title="Atualizar coluna">↻</button>
@@ -718,7 +728,7 @@
     <div class="coluna tipo-sindical" id="col-dce" draggable="true">
       <div class="resize-handle"></div>
       <div class="coluna-header">
-        <h2>📸 DCE USP <span class="col-status-icon" id="status-col-dce"></span></h2>
+        <h2>DCE USP <span class="col-status-icon" id="status-col-dce"></span></h2>
         <div style="display:flex;align-items:center;gap:4px">
           <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-dce')" title="Marcar todos como lidos">✓</button>
           <button class="btn-col-refresh" id="refresh-col-dce" onclick="refreshColuna('col-dce')" title="Atualizar coluna">↻</button>
@@ -1091,7 +1101,7 @@
             btn.dataset.tag = t.nome;
             btn.dataset.favKey = itemKey;
             btn.title = ativo ? `Remover: ${t.nome}` : `Marcar: ${t.nome}`;
-            btn.textContent = t.emoji + ' ' + t.nome;
+            btn.textContent = t.nome;
             btn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); toggleTagFavorito(itemKey, t.nome); });
             tagsDiv.appendChild(btn);
           });
@@ -1165,21 +1175,21 @@
       const btn = document.getElementById('btn-notif');
       if (!('Notification' in window)) { btn.style.display = 'none'; return; }
       if (Notification.permission === 'granted') {
-        btn.textContent = '🔔'; btn.title = 'Notificações ativas'; btn.classList.add('notif-ativo'); btn.classList.remove('notif-negado');
+        btn.textContent = 'Notif.'; btn.title = 'Notificações ativas'; btn.classList.add('notif-ativo'); btn.classList.remove('notif-negado');
       } else if (Notification.permission === 'denied') {
-        btn.textContent = '🔇'; btn.title = 'Notificações bloqueadas no navegador'; btn.classList.add('notif-negado'); btn.classList.remove('notif-ativo');
+        btn.textContent = 'Notif.'; btn.title = 'Notificações bloqueadas no navegador'; btn.classList.add('notif-negado'); btn.classList.remove('notif-ativo');
       } else {
-        btn.textContent = '🔕'; btn.title = 'Clique para ativar notificações'; btn.classList.remove('notif-ativo', 'notif-negado');
+        btn.textContent = 'Notif.'; btn.title = 'Clique para ativar notificações'; btn.classList.remove('notif-ativo', 'notif-negado');
       }
     }
 
     async function toggleNotificacoes() {
       if (!('Notification' in window)) { showToast('Notificações não suportadas neste navegador'); return; }
       if (Notification.permission === 'denied') { showToast('Notificações bloqueadas — desbloqueie nas configurações do navegador'); return; }
-      if (Notification.permission === 'granted') { showToast('Notificações já estão ativas 🔔'); return; }
+      if (Notification.permission === 'granted') { showToast('Notificações já estão ativas'); return; }
       const perm = await Notification.requestPermission();
       atualizarBotaoNotif();
-      if (perm === 'granted') showToast('Notificações ativadas! 🔔');
+      if (perm === 'granted') showToast('Notificações ativadas!');
       else showToast('Permissão negada');
     }
 
@@ -1313,7 +1323,7 @@
       const btn = document.getElementById('btn-copiar-link');
       navigator.clipboard.writeText(window.location.href).then(() => {
         btn.textContent = '✓ Copiado!'; btn.classList.add('copiado');
-        setTimeout(() => { btn.textContent = '🔗 Copiar link'; btn.classList.remove('copiado'); }, 2000);
+        setTimeout(() => { btn.textContent = 'Copiar link'; btn.classList.remove('copiado'); }, 2000);
       }).catch(() => showToast('Não foi possível copiar'));
     }
 
@@ -1342,12 +1352,12 @@
     const themeToggle = document.getElementById('theme-toggle');
     if (localStorage.getItem('monitor-usp-theme') === 'dark') {
       document.body.classList.add('dark-theme');
-      themeToggle.textContent = '☀️ Modo Claro';
+      themeToggle.textContent = 'Modo Claro';
     }
     themeToggle.addEventListener('click', () => {
       document.body.classList.toggle('dark-theme');
       const isDark = document.body.classList.contains('dark-theme');
-      themeToggle.textContent = isDark ? '☀️ Modo Claro' : '🌙 Modo Escuro';
+      themeToggle.textContent = isDark ? 'Modo Claro' : 'Modo Escuro';
       localStorage.setItem('monitor-usp-theme', isDark ? 'dark' : 'light');
       // Atualiza pickers para refletir padrões do novo tema (se não houver cores customizadas)
       if (!localStorage.getItem(CORES_KEY)) {
@@ -1695,7 +1705,7 @@
         link: DCE_INSTAGRAM_URL,
         isodate: '',
         colId,
-        extraHtml: '<div class="fonte">📸 Sem RSS — confira manualmente no Instagram</div>'
+        extraHtml: '<div class="fonte">Sem RSS — confira manualmente no Instagram</div>'
       };
       container.appendChild(criarItem(data));
       document.getElementById("count-dce").textContent = '1';
@@ -1875,7 +1885,7 @@
 
         if (!items.length) {
           container.innerHTML = `<div class="estado">Nenhum livro encontrado.<br>
-            <a href="https://www.livrosabertos.abcd.usp.br/portaldelivrosUSP" target="_blank" style="color:var(--link-color)">🔗 Portal Livros USP</a></div>`;
+            <a href="https://www.livrosabertos.abcd.usp.br/portaldelivrosUSP" target="_blank" style="color:var(--link-color)">Portal Livros USP</a></div>`;
           document.getElementById('count-livros').textContent = '0';
           return;
         }
@@ -1890,8 +1900,8 @@
           const autores = (w.authorships || []).map(a => a.author?.display_name).filter(Boolean).slice(0, 2).join(', ');
           const editora = w.primary_location?.source?.display_name || '';
           const extraHtml = [
-            autores ? `<div class="fonte">👤 ${autores}</div>` : '',
-            editora ? `<div class="fonte">🏛️ ${editora}</div>` : '',
+            autores ? `<div class="fonte">${autores}</div>` : '',
+            editora ? `<div class="fonte">${editora}</div>` : '',
           ].join('');
           const data = { titulo, link, isodate, colId, extraHtml };
           cacheItems.push(data);
@@ -1913,7 +1923,7 @@
           setColStatus(colId, 'cache');
         } else {
           container.innerHTML = `<div class="estado">Não foi possível carregar.<br>
-            <a href="https://www.livrosabertos.abcd.usp.br/portaldelivrosUSP" target="_blank" style="color:var(--link-color)">🔗 Portal Livros USP</a></div>`;
+            <a href="https://www.livrosabertos.abcd.usp.br/portaldelivrosUSP" target="_blank" style="color:var(--link-color)">Portal Livros USP</a></div>`;
         }
         throw e;
       }
@@ -1944,9 +1954,9 @@
           const tipo     = item.type || "";
           const citacoes = item.cited_by_count != null ? item.cited_by_count : null;
           const extraHtml = [
-            revista  ? `<div class="fonte">📄 ${revista}</div>` : '',
+            revista  ? `<div class="fonte">${revista}</div>` : '',
             tipo     ? `<div class="fonte">· ${tipo}</div>` : '',
-            citacoes != null ? `<div class="fonte">💬 ${citacoes} citação${citacoes !== 1 ? 's' : ''}</div>` : ''
+            citacoes != null ? `<div class="fonte">${citacoes} citação${citacoes !== 1 ? 's' : ''}</div>` : ''
           ].join('');
           const data = { titulo, link, isodate, colId, extraHtml };
           cacheItems.push(data);
@@ -1967,7 +1977,7 @@
           atualizarBadgeNaoLidos(colId);
           setColStatus(colId, 'cache');
         } else {
-          container.innerHTML = `<div class="estado">Não foi possível carregar.<br><a href="https://openalex.org/institutions/I17974374" target="_blank" style="color:var(--link-color)">🔗 Abrir OpenAlex USP</a></div>`;
+          container.innerHTML = `<div class="estado">Não foi possível carregar.<br><a href="https://openalex.org/institutions/I17974374" target="_blank" style="color:var(--link-color)">Abrir OpenAlex USP</a></div>`;
         }
         throw e;
       }
@@ -2046,8 +2056,8 @@
     // CORES DAS CATEGORIAS
     // ==============================
     const CORES_KEY = 'monitor-usp-cores';
-    const CORES_PADRAO_LIGHT = { oficial: '#003063', externo: '#e65100', ciencia: '#00796b', pessoal: '#7c3aed', sindical: '#dc2626' };
-    const CORES_PADRAO_DARK  = { oficial: '#58a6ff', externo: '#ff9800', ciencia: '#4db6ac', pessoal: '#c084fc', sindical: '#f87171' };
+    const CORES_PADRAO_LIGHT = { oficial: '#8a5a34', externo: '#b4530f', ciencia: '#6f7a37', pessoal: '#8c5a72', sindical: '#af4234' };
+    const CORES_PADRAO_DARK  = { oficial: '#c9a06a', externo: '#d9843f', ciencia: '#a3b273', pessoal: '#c191a8', sindical: '#d9846f' };
 
     function aplicarCores(cores) {
       let el = document.getElementById('user-color-overrides');
