@@ -287,6 +287,7 @@
     .fav-filtro-btn.ativo[data-filter="LinkedIn"] { background: color-mix(in srgb, #0077b5 16%, transparent); color: #0077b5; }
     .fav-filtro-btn.ativo[data-filter="Atenção"]  { background: color-mix(in srgb, #b3402f 16%, transparent); color: #b3402f; }
     .fav-filtro-btn.ativo[data-filter="Pauta"]    { background: color-mix(in srgb, var(--cat-pessoal) 16%, transparent); color: var(--cat-pessoal); }
+    .fav-filtro-btn.ativo[data-filter="Traduzir"] { background: color-mix(in srgb, var(--cat-ciencia) 16%, transparent); color: var(--cat-ciencia); }
     body.dark-theme .fav-filtro-btn.ativo[data-filter="Atenção"] { color: #d9846f; background: color-mix(in srgb, #d9846f 18%, transparent); }
 
     /* FAVORITOS: TAGS POR ITEM */
@@ -301,6 +302,7 @@
     .fav-tag[data-tag="Atenção"]  { background: color-mix(in srgb, #b3402f 16%, transparent); color: #b3402f; }
     body.dark-theme .fav-tag[data-tag="Atenção"] { color: #d9846f; background: color-mix(in srgb, #d9846f 18%, transparent); }
     .fav-tag[data-tag="Pauta"]    { background: color-mix(in srgb, var(--cat-pessoal) 16%, transparent); color: var(--cat-pessoal); }
+    .fav-tag[data-tag="Traduzir"] { background: color-mix(in srgb, var(--cat-ciencia) 16%, transparent); color: var(--cat-ciencia); }
 
     /* FAVORITOS: NOTA */
     .fav-nota-wrap { margin-top: 5px; }
@@ -514,6 +516,7 @@
         <button class="fav-filtro-btn"       data-filter="LinkedIn" onclick="setFiltroTag(this)">LinkedIn</button>
         <button class="fav-filtro-btn"       data-filter="Atenção"  onclick="setFiltroTag(this)">Atenção</button>
         <button class="fav-filtro-btn"       data-filter="Pauta"    onclick="setFiltroTag(this)">Pauta</button>
+        <button class="fav-filtro-btn"       data-filter="Traduzir" onclick="setFiltroTag(this)">Traduzir</button>
       </div>
       <div class="coluna-body">
         <div id="favoritos-container"></div>
@@ -976,6 +979,7 @@
       { nome: 'LinkedIn', cor: '#0077b5', emoji: '💼' },
       { nome: 'Atenção',  cor: '#ef4444', emoji: '🚨' },
       { nome: 'Pauta',    cor: '#7c3aed', emoji: '📋' },
+      { nome: 'Traduzir', cor: '#6f7a37', emoji: '🌐' },
     ];
 
     let filtroTagAtivo = 'todos';
