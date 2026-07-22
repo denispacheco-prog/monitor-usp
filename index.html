@@ -71,8 +71,6 @@
       --jornal-border: #c9a06a;
     }
 
-    body.dark-theme .item a { color: var(--text-main) !important; }
-
     body { font-family: var(--font-sans); background-color: var(--bg-body); margin: 0; color: var(--text-main); transition: background-color 0.3s, color 0.3s; }
 
     header { background-color: var(--bg-header); color: var(--text-header); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; transition: background-color 0.3s; border-bottom: 1px solid var(--border-color); }
@@ -257,7 +255,7 @@
     .item:last-child { border-bottom: none; }
     .item.oculto { display: none; }
 
-    .item a { font-weight: 600; color: var(--link-color); text-decoration: none; font-size: var(--font-size-link); display: block; margin-bottom: 3px; line-height: 1.4; padding-right: 20px; }
+    .item a { font-weight: 600; color: var(--text-main); text-decoration: none; font-size: var(--font-size-link); display: block; margin-bottom: 3px; line-height: 1.4; padding-right: 20px; }
     .item a:hover { text-decoration: underline; }
     .item img { width: 100%; border-radius: 4px; margin-bottom: 5px; }
     .item .data  { font-size: var(--font-size-meta); color: var(--text-muted); }
@@ -1889,7 +1887,7 @@
 
         if (!items.length) {
           container.innerHTML = `<div class="estado">Nenhum livro encontrado.<br>
-            <a href="https://www.livrosabertos.abcd.usp.br/portaldelivrosUSP" target="_blank" style="color:var(--link-color)">Portal Livros USP</a></div>`;
+            <a href="https://www.livrosabertos.abcd.usp.br/portaldelivrosUSP" target="_blank" style="color:var(--text-main)">Portal Livros USP</a></div>`;
           document.getElementById('count-livros').textContent = '0';
           return;
         }
@@ -1927,7 +1925,7 @@
           setColStatus(colId, 'cache');
         } else {
           container.innerHTML = `<div class="estado">Não foi possível carregar.<br>
-            <a href="https://www.livrosabertos.abcd.usp.br/portaldelivrosUSP" target="_blank" style="color:var(--link-color)">Portal Livros USP</a></div>`;
+            <a href="https://www.livrosabertos.abcd.usp.br/portaldelivrosUSP" target="_blank" style="color:var(--text-main)">Portal Livros USP</a></div>`;
         }
         throw e;
       }
@@ -1981,7 +1979,7 @@
           atualizarBadgeNaoLidos(colId);
           setColStatus(colId, 'cache');
         } else {
-          container.innerHTML = `<div class="estado">Não foi possível carregar.<br><a href="https://openalex.org/institutions/I17974374" target="_blank" style="color:var(--link-color)">Abrir OpenAlex USP</a></div>`;
+          container.innerHTML = `<div class="estado">Não foi possível carregar.<br><a href="https://openalex.org/institutions/I17974374" target="_blank" style="color:var(--text-main)">Abrir OpenAlex USP</a></div>`;
         }
         throw e;
       }
