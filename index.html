@@ -285,12 +285,12 @@
     .fav-filtro-btn:hover { border-color: var(--link-color); color: var(--link-color); }
     .fav-filtro-btn.ativo { border-color: transparent; }
     .fav-filtro-btn.ativo[data-filter="todos"]    { background: color-mix(in srgb, var(--text-muted) 16%, transparent); color: var(--text-main); }
-    .fav-filtro-btn.ativo[data-filter="USP News"]      { background: color-mix(in srgb, var(--cat-oficial) 16%, transparent); color: var(--cat-oficial); }
-    .fav-filtro-btn.ativo[data-filter="Rádio USP"]     { background: color-mix(in srgb, #c1653f 16%, transparent); color: #c1653f; }
-    .fav-filtro-btn.ativo[data-filter="Momento Cidade"] { background: color-mix(in srgb, #9c8a3a 16%, transparent); color: #9c8a3a; }
+    .fav-filtro-btn.ativo[data-filter="P/ Traduzir"]      { background: color-mix(in srgb, var(--cat-oficial) 16%, transparent); color: var(--cat-oficial); }
+    .fav-filtro-btn.ativo[data-filter="P/ Áudio"]     { background: color-mix(in srgb, #c1653f 16%, transparent); color: #c1653f; }
+    .fav-filtro-btn.ativo[data-filter="P/ Podcast"] { background: color-mix(in srgb, #9c8a3a 16%, transparent); color: #9c8a3a; }
     .fav-filtro-btn.ativo[data-filter="Alerta"]        { background: color-mix(in srgb, var(--cat-sindical) 16%, transparent); color: var(--cat-sindical); }
-    body.dark-theme .fav-filtro-btn.ativo[data-filter="Rádio USP"]     { color: #e08a68; background: color-mix(in srgb, #e08a68 18%, transparent); }
-    body.dark-theme .fav-filtro-btn.ativo[data-filter="Momento Cidade"] { color: #c7b563; background: color-mix(in srgb, #c7b563 18%, transparent); }
+    body.dark-theme .fav-filtro-btn.ativo[data-filter="P/ Áudio"]     { color: #e08a68; background: color-mix(in srgb, #e08a68 18%, transparent); }
+    body.dark-theme .fav-filtro-btn.ativo[data-filter="P/ Podcast"] { color: #c7b563; background: color-mix(in srgb, #c7b563 18%, transparent); }
 
     /* FAVORITOS: TAGS POR ITEM */
     .fav-tags { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 6px; }
@@ -298,12 +298,12 @@
     .fav-tag.ativo { opacity: 1; }
     .fav-tag:not(.ativo):hover { opacity: 0.7; }
     .fav-tag:active { transform: scale(0.94); }
-    .fav-tag[data-tag="USP News"]       { background: color-mix(in srgb, var(--cat-oficial) 16%, transparent); color: var(--cat-oficial); }
-    .fav-tag[data-tag="Rádio USP"]      { background: color-mix(in srgb, #c1653f 16%, transparent); color: #c1653f; }
-    .fav-tag[data-tag="Momento Cidade"] { background: color-mix(in srgb, #9c8a3a 16%, transparent); color: #9c8a3a; }
+    .fav-tag[data-tag="P/ Traduzir"]       { background: color-mix(in srgb, var(--cat-oficial) 16%, transparent); color: var(--cat-oficial); }
+    .fav-tag[data-tag="P/ Áudio"]      { background: color-mix(in srgb, #c1653f 16%, transparent); color: #c1653f; }
+    .fav-tag[data-tag="P/ Podcast"] { background: color-mix(in srgb, #9c8a3a 16%, transparent); color: #9c8a3a; }
     .fav-tag[data-tag="Alerta"]         { background: color-mix(in srgb, var(--cat-sindical) 16%, transparent); color: var(--cat-sindical); }
-    body.dark-theme .fav-tag[data-tag="Rádio USP"]      { color: #e08a68; background: color-mix(in srgb, #e08a68 18%, transparent); }
-    body.dark-theme .fav-tag[data-tag="Momento Cidade"] { color: #c7b563; background: color-mix(in srgb, #c7b563 18%, transparent); }
+    body.dark-theme .fav-tag[data-tag="P/ Áudio"]      { color: #e08a68; background: color-mix(in srgb, #e08a68 18%, transparent); }
+    body.dark-theme .fav-tag[data-tag="P/ Podcast"] { color: #c7b563; background: color-mix(in srgb, #c7b563 18%, transparent); }
 
     /* FAVORITOS: NOTA */
     .fav-nota-wrap { margin-top: 5px; }
@@ -512,9 +512,9 @@
       </div>
       <div class="fav-filtro-bar" id="fav-filtro-bar">
         <button class="fav-filtro-btn ativo" data-filter="todos"          onclick="setFiltroTag(this)">Todos</button>
-        <button class="fav-filtro-btn"       data-filter="USP News"       onclick="setFiltroTag(this)">USP News</button>
-        <button class="fav-filtro-btn"       data-filter="Rádio USP"      onclick="setFiltroTag(this)">Rádio USP</button>
-        <button class="fav-filtro-btn"       data-filter="Momento Cidade" onclick="setFiltroTag(this)">Momento Cidade</button>
+        <button class="fav-filtro-btn"       data-filter="P/ Traduzir"       onclick="setFiltroTag(this)">P/ Traduzir</button>
+        <button class="fav-filtro-btn"       data-filter="P/ Áudio"      onclick="setFiltroTag(this)">P/ Áudio</button>
+        <button class="fav-filtro-btn"       data-filter="P/ Podcast" onclick="setFiltroTag(this)">P/ Podcast</button>
         <button class="fav-filtro-btn"       data-filter="Alerta"         onclick="setFiltroTag(this)">Alerta</button>
       </div>
       <div class="coluna-body">
@@ -968,9 +968,9 @@
     // SISTEMA DE TAGS — FAVORITOS
     // ==============================
     const TAGS_FAV = [
-      { nome: 'USP News' },
-      { nome: 'Rádio USP' },
-      { nome: 'Momento Cidade' },
+      { nome: 'P/ Traduzir' },
+      { nome: 'P/ Áudio' },
+      { nome: 'P/ Podcast' },
       { nome: 'Alerta' },
     ];
 
