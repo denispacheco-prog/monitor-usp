@@ -112,12 +112,14 @@
     .col-status-icon { font-size: 10px; margin-left: 4px; opacity: 0.7; cursor: pointer; transition: opacity 0.2s; }
     .col-status-icon:hover { opacity: 1; }
 
-    .btn-col-refresh, .btn-marcar-lidos {
+    .btn-col-refresh, .btn-marcar-lidos, .btn-limpar-favs {
       background: none; border: none; color: var(--text-muted); font-size: 13px; cursor: pointer; padding: 0 3px; border-radius: 3px; line-height: 1; opacity: 0; transition: opacity 0.2s, color 0.15s, transform 0.3s;
     }
     .coluna-header:hover .btn-col-refresh,
-    .coluna-header:hover .btn-marcar-lidos { opacity: 0.7; }
+    .coluna-header:hover .btn-marcar-lidos,
+    .coluna-header:hover .btn-limpar-favs { opacity: 0.7; }
     .btn-col-refresh:hover, .btn-marcar-lidos:hover { opacity: 1 !important; color: var(--link-color); }
+    .btn-limpar-favs:hover { opacity: 1 !important; color: var(--cat-externo); background: color-mix(in srgb, var(--cat-externo) 12%, transparent); }
     .btn-col-refresh.girando { animation: girar 0.7s linear; }
 
     .badge-novo { display: inline-block; background: #6b8f5e; color: #fff; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 10px; margin-left: 5px; letter-spacing: 0.02em; animation: fade-in-badge 0.4s ease; }
@@ -195,15 +197,18 @@
 
     .coluna { flex: 0 0 var(--col-width); width: var(--col-width); background: var(--bg-coluna); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04); overflow: hidden; transition: background-color 0.3s, box-shadow 0.2s; position: relative; }
 
+    #col-favoritos { flex: 0 0 380px; width: 380px; }
+
     .coluna.tipo-oficial { border-top: 4px solid var(--cat-oficial); }
     .coluna.tipo-oficial .coluna-header h2 { color: var(--cat-oficial); }
     .coluna.tipo-externo { border-top: 4px solid var(--cat-externo); }
     .coluna.tipo-externo .coluna-header h2 { color: var(--cat-externo); }
     .coluna.tipo-ciencia { border-top: 4px solid var(--cat-ciencia); }
     .coluna.tipo-ciencia .coluna-header h2 { color: var(--cat-ciencia); }
-    .coluna.tipo-favoritos { border-top: 4px solid #d97706; }
+    .coluna.tipo-favoritos { border-top: 5px solid #d97706; background: color-mix(in srgb, #d97706 3%, var(--bg-coluna)); box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04), inset 0 0 0 1px color-mix(in srgb, #d97706 12%, transparent); }
     .coluna.tipo-favoritos .coluna-header h2 { color: #d97706; }
     body.dark-theme .coluna.tipo-favoritos .coluna-header h2 { color: #fbbf24; }
+    body.dark-theme .coluna.tipo-favoritos { background: color-mix(in srgb, #fbbf24 5%, var(--bg-coluna)); box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.15), inset 0 0 0 1px color-mix(in srgb, #fbbf24 14%, transparent); }
     .coluna.tipo-pessoal { border-top: 4px solid var(--cat-pessoal); }
     .coluna.tipo-pessoal .coluna-header h2 { color: var(--cat-pessoal); }
     .coluna.tipo-sindical { border-top: 4px solid var(--cat-sindical); }
@@ -280,13 +285,12 @@
     .fav-filtro-btn:hover { border-color: var(--link-color); color: var(--link-color); }
     .fav-filtro-btn.ativo { border-color: transparent; }
     .fav-filtro-btn.ativo[data-filter="todos"]    { background: color-mix(in srgb, var(--text-muted) 16%, transparent); color: var(--text-main); }
-    .fav-filtro-btn.ativo[data-filter="Bluesky"]  { background: color-mix(in srgb, #1185fe 16%, transparent); color: #1185fe; }
-    .fav-filtro-btn.ativo[data-filter="Threads"]  { background: color-mix(in srgb, var(--text-main) 16%, transparent); color: var(--text-main); }
-    .fav-filtro-btn.ativo[data-filter="LinkedIn"] { background: color-mix(in srgb, #0077b5 16%, transparent); color: #0077b5; }
-    .fav-filtro-btn.ativo[data-filter="Atenção"]  { background: color-mix(in srgb, #b3402f 16%, transparent); color: #b3402f; }
-    .fav-filtro-btn.ativo[data-filter="Pauta"]    { background: color-mix(in srgb, var(--cat-pessoal) 16%, transparent); color: var(--cat-pessoal); }
-    .fav-filtro-btn.ativo[data-filter="Traduzir"] { background: color-mix(in srgb, var(--cat-ciencia) 16%, transparent); color: var(--cat-ciencia); }
-    body.dark-theme .fav-filtro-btn.ativo[data-filter="Atenção"] { color: #d9846f; background: color-mix(in srgb, #d9846f 18%, transparent); }
+    .fav-filtro-btn.ativo[data-filter="USP News"]      { background: color-mix(in srgb, var(--cat-oficial) 16%, transparent); color: var(--cat-oficial); }
+    .fav-filtro-btn.ativo[data-filter="Rádio USP"]     { background: color-mix(in srgb, #c1653f 16%, transparent); color: #c1653f; }
+    .fav-filtro-btn.ativo[data-filter="Momento Cidade"] { background: color-mix(in srgb, #9c8a3a 16%, transparent); color: #9c8a3a; }
+    .fav-filtro-btn.ativo[data-filter="Alerta"]        { background: color-mix(in srgb, var(--cat-sindical) 16%, transparent); color: var(--cat-sindical); }
+    body.dark-theme .fav-filtro-btn.ativo[data-filter="Rádio USP"]     { color: #e08a68; background: color-mix(in srgb, #e08a68 18%, transparent); }
+    body.dark-theme .fav-filtro-btn.ativo[data-filter="Momento Cidade"] { color: #c7b563; background: color-mix(in srgb, #c7b563 18%, transparent); }
 
     /* FAVORITOS: TAGS POR ITEM */
     .fav-tags { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 6px; }
@@ -294,20 +298,19 @@
     .fav-tag.ativo { opacity: 1; }
     .fav-tag:not(.ativo):hover { opacity: 0.7; }
     .fav-tag:active { transform: scale(0.94); }
-    .fav-tag[data-tag="Bluesky"]  { background: color-mix(in srgb, #1185fe 16%, transparent); color: #1185fe; }
-    .fav-tag[data-tag="Threads"]  { background: color-mix(in srgb, var(--text-main) 16%, transparent); color: var(--text-main); }
-    .fav-tag[data-tag="LinkedIn"] { background: color-mix(in srgb, #0077b5 16%, transparent); color: #0077b5; }
-    .fav-tag[data-tag="Atenção"]  { background: color-mix(in srgb, #b3402f 16%, transparent); color: #b3402f; }
-    body.dark-theme .fav-tag[data-tag="Atenção"] { color: #d9846f; background: color-mix(in srgb, #d9846f 18%, transparent); }
-    .fav-tag[data-tag="Pauta"]    { background: color-mix(in srgb, var(--cat-pessoal) 16%, transparent); color: var(--cat-pessoal); }
-    .fav-tag[data-tag="Traduzir"] { background: color-mix(in srgb, var(--cat-ciencia) 16%, transparent); color: var(--cat-ciencia); }
+    .fav-tag[data-tag="USP News"]       { background: color-mix(in srgb, var(--cat-oficial) 16%, transparent); color: var(--cat-oficial); }
+    .fav-tag[data-tag="Rádio USP"]      { background: color-mix(in srgb, #c1653f 16%, transparent); color: #c1653f; }
+    .fav-tag[data-tag="Momento Cidade"] { background: color-mix(in srgb, #9c8a3a 16%, transparent); color: #9c8a3a; }
+    .fav-tag[data-tag="Alerta"]         { background: color-mix(in srgb, var(--cat-sindical) 16%, transparent); color: var(--cat-sindical); }
+    body.dark-theme .fav-tag[data-tag="Rádio USP"]      { color: #e08a68; background: color-mix(in srgb, #e08a68 18%, transparent); }
+    body.dark-theme .fav-tag[data-tag="Momento Cidade"] { color: #c7b563; background: color-mix(in srgb, #c7b563 18%, transparent); }
 
     /* FAVORITOS: NOTA */
     .fav-nota-wrap { margin-top: 5px; }
-    .fav-nota { width: 100%; box-sizing: border-box; font-size: 11px; font-family: inherit; color: var(--text-muted); background: transparent; border: 1px solid transparent; border-radius: 4px; padding: 2px 5px; resize: none; overflow: hidden; min-height: 20px; transition: border-color 0.2s, background 0.2s, min-height 0.2s; outline: none; display: block; }
-    .fav-nota:hover { border-color: var(--border-color); }
-    .fav-nota:focus { border-color: var(--border-color); background: var(--bg-body); min-height: 56px; overflow: auto; color: var(--text-main); }
-    .fav-nota::placeholder { color: var(--text-muted); opacity: 0.4; font-style: italic; }
+    .fav-nota { width: 100%; box-sizing: border-box; font-size: 11.5px; font-family: inherit; color: var(--text-muted); background: color-mix(in srgb, var(--bg-item-hover) 70%, transparent); border: 1px solid color-mix(in srgb, var(--border-color) 80%, transparent); border-radius: 5px; padding: 4px 7px; resize: none; overflow: hidden; min-height: 24px; transition: border-color 0.2s, background 0.2s, min-height 0.2s; outline: none; display: block; }
+    .fav-nota:hover { border-color: var(--link-color); }
+    .fav-nota:focus { border-color: var(--link-color); background: var(--bg-body); min-height: 56px; overflow: auto; color: var(--text-main); }
+    .fav-nota::placeholder { color: var(--text-muted); opacity: 0.55; font-style: italic; }
 
     /* FAVORITOS: SEPARADOR DE DIA */
     .fav-dia-sep { padding: 6px 14px 4px; font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; background: var(--bg-busca); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 2; }
@@ -477,7 +480,6 @@
     <label>Colunas:</label>
     <button class="toggle-col-btn tipo-favoritos ativo" data-col="col-favoritos" onclick="toggleColuna(this, event)">Favoritos</button>
     <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-rss"       onclick="toggleColuna(this, event)">Jornal USP</button>
-    <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-bsky"      onclick="toggleColuna(this, event)">Bluesky</button>
     <button class="toggle-col-btn tipo-oficial ativo"   data-col="col-yt"        onclick="toggleColuna(this, event)">YouTube</button>
     <button class="toggle-col-btn tipo-externo ativo"   data-col="col-reddit"    onclick="toggleColuna(this, event)">Reddit</button>
     <button class="toggle-col-btn tipo-externo ativo"   data-col="col-alerts"    onclick="toggleColuna(this, event)">Google Alerts</button>
@@ -504,17 +506,16 @@
         <h2>Favoritos <span class="col-status-icon" id="status-col-favoritos"></span></h2>
         <div style="display:flex;align-items:center;gap:4px">
           <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-favoritos')" title="Marcar todos como lidos">✓</button>
+          <button class="btn-limpar-favs" onclick="limparTodosFavoritos()" title="Apagar todos os favoritos">🗑</button>
           <span class="coluna-count" id="count-favoritos">—</span>
         </div>
       </div>
       <div class="fav-filtro-bar" id="fav-filtro-bar">
-        <button class="fav-filtro-btn ativo" data-filter="todos"    onclick="setFiltroTag(this)">Todos</button>
-        <button class="fav-filtro-btn"       data-filter="Bluesky"  onclick="setFiltroTag(this)">Bluesky</button>
-        <button class="fav-filtro-btn"       data-filter="Threads"  onclick="setFiltroTag(this)">Threads</button>
-        <button class="fav-filtro-btn"       data-filter="LinkedIn" onclick="setFiltroTag(this)">LinkedIn</button>
-        <button class="fav-filtro-btn"       data-filter="Atenção"  onclick="setFiltroTag(this)">Atenção</button>
-        <button class="fav-filtro-btn"       data-filter="Pauta"    onclick="setFiltroTag(this)">Pauta</button>
-        <button class="fav-filtro-btn"       data-filter="Traduzir" onclick="setFiltroTag(this)">Traduzir</button>
+        <button class="fav-filtro-btn ativo" data-filter="todos"          onclick="setFiltroTag(this)">Todos</button>
+        <button class="fav-filtro-btn"       data-filter="USP News"       onclick="setFiltroTag(this)">USP News</button>
+        <button class="fav-filtro-btn"       data-filter="Rádio USP"      onclick="setFiltroTag(this)">Rádio USP</button>
+        <button class="fav-filtro-btn"       data-filter="Momento Cidade" onclick="setFiltroTag(this)">Momento Cidade</button>
+        <button class="fav-filtro-btn"       data-filter="Alerta"         onclick="setFiltroTag(this)">Alerta</button>
       </div>
       <div class="coluna-body">
         <div id="favoritos-container"></div>
@@ -536,23 +537,6 @@
       <div class="coluna-body">
         <div id="rss-container" class="estado">Carregando...</div>
         <div id="sem-rss" class="sem-resultado">Nenhum resultado.</div>
-      </div>
-    </div>
-
-    <div class="coluna tipo-oficial" id="col-bsky" draggable="true">
-      <div class="resize-handle"></div>
-      <div class="coluna-header">
-        <h2>Bluesky <span class="col-status-icon" id="status-col-bsky"></span></h2>
-        <div style="display:flex;align-items:center;gap:4px">
-          <button class="btn-marcar-lidos" onclick="marcarTodosLidos('col-bsky')" title="Marcar todos como lidos">✓</button>
-          <button class="btn-col-refresh" id="refresh-col-bsky" onclick="refreshColuna('col-bsky')" title="Atualizar coluna">↻</button>
-          <span class="badge-nao-lido" id="nao-lidos-col-bsky" style="display:none"></span>
-          <span class="coluna-count" id="count-bsky">—</span>
-        </div>
-      </div>
-      <div class="coluna-body">
-        <div id="bsky-container" class="estado">Carregando...</div>
-        <div id="sem-bsky" class="sem-resultado">Nenhum resultado.</div>
       </div>
     </div>
 
@@ -760,7 +744,6 @@
     const RSS_ALERTS  = "https://www.google.com/alerts/feeds/02947877249843560141/10910834947331316113";
     const YOUTUBE_KEY = "AIzaSyDD3X-8tZH972BSgTHeE55i0403WpZWlx4";
     const YOUTUBE_CH  = "UCN1ihdoKXeixzYi7Hyp4WwQ";
-    const BSKY_HANDLE    = "uspoficial.bsky.social";
     const RSS_REDDIT     = "https://www.reddit.com/r/usp/.rss";
     const RSS_OBITOS     = "https://news.google.com/rss/search?q=(falecimento+OR+obituário+OR+faleceu+OR+%22nota+de+falecimento%22)+(USP+OR+%22Universidade+de+São+Paulo%22)&hl=pt-BR&gl=BR&ceid=BR:pt-419";
     const RSS_AGENCIA    = "https://agenciabrasil.ebc.com.br/rss/educacao/feed.xml";
@@ -771,7 +754,6 @@
       { container: "favoritos-container", sem: "sem-favoritos", count: "count-favoritos", colId: "col-favoritos", local: true,  fn: renderizarFavoritos },
       { container: "alerts-container",    sem: "sem-alerts",    count: "count-alerts",    colId: "col-alerts",   local: false, fn: () => carregarRSS(RSS_ALERTS, "alerts-container",  "count-alerts",  20, "col-alerts")  },
       { container: "rss-container",       sem: "sem-rss",       count: "count-rss",       colId: "col-rss",      local: false, fn: () => carregarJornalUSP()    },
-      { container: "bsky-container",      sem: "sem-bsky",      count: "count-bsky",      colId: "col-bsky",     local: false, fn: () => carregarBluesky()      },
       { container: "youtube-container",   sem: "sem-yt",        count: "count-yt",        colId: "col-yt",       local: false, fn: () => carregarYouTube()      },
       { container: "fapesp-container",    sem: "sem-fapesp",    count: "count-fapesp",    colId: "col-fapesp",   local: false, fn: () => carregarRSS(RSS_FAPESP,  "fapesp-container",  "count-fapesp",  20, "col-fapesp")  },
       { container: "openalex-container",  sem: "sem-openalex",  count: "count-openalex",  colId: "col-openalex", local: false, fn: () => carregarOpenAlex()     },
@@ -786,7 +768,7 @@
 
     // Nome legível de cada coluna
     const NOME_COL = {
-      'col-rss': 'Jornal USP', 'col-bsky': 'Bluesky', 'col-yt': 'YouTube',
+      'col-rss': 'Jornal USP', 'col-yt': 'YouTube',
       'col-alerts': 'Google Alerts', 'col-reddit': 'Reddit',
       'col-fapesp': 'FAPESP', 'col-openalex': 'OpenAlex',
       'col-livros': 'Livros USP', 'col-obitos': 'Óbitos USP', 'col-agencia': 'Agência Brasil', 'col-favoritos': 'Favoritos',
@@ -968,16 +950,28 @@
       }
     }
 
+    function limparTodosFavoritos() {
+      if (favoritosArr.length === 0) return;
+      const ok = confirm(`Apagar todos os ${favoritosArr.length} favoritos salvos? Essa ação não pode ser desfeita.`);
+      if (!ok) return;
+      favoritosArr = [];
+      salvarFavoritos();
+      renderizarFavoritos();
+      document.querySelectorAll('.btn-star.ativo').forEach(btn => {
+        btn.classList.remove('ativo');
+        btn.title = 'Salvar nos favoritos';
+      });
+      showToast('Favoritos apagados');
+    }
+
     // ==============================
     // SISTEMA DE TAGS — FAVORITOS
     // ==============================
     const TAGS_FAV = [
-      { nome: 'Bluesky',  cor: '#1185fe', emoji: '🦋' },
-      { nome: 'Threads',  cor: '#101010', emoji: '🧵' },
-      { nome: 'LinkedIn', cor: '#0077b5', emoji: '💼' },
-      { nome: 'Atenção',  cor: '#ef4444', emoji: '🚨' },
-      { nome: 'Pauta',    cor: '#7c3aed', emoji: '📋' },
-      { nome: 'Traduzir', cor: '#6f7a37', emoji: '🌐' },
+      { nome: 'USP News' },
+      { nome: 'Rádio USP' },
+      { nome: 'Momento Cidade' },
+      { nome: 'Alerta' },
     ];
 
     let filtroTagAtivo = 'todos';
@@ -1773,53 +1767,6 @@
           setColStatus(colId, 'cache');
         } else {
           container.innerHTML = '<div class="estado">Não foi possível carregar.</div>';
-        }
-        throw e;
-      }
-    }
-
-    // ==============================
-    // BLUESKY
-    // ==============================
-    async function carregarBluesky() {
-      const container = document.getElementById("bsky-container");
-      const colId = 'col-bsky';
-      try {
-        const perfilResp = await fetch(`https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=${BSKY_HANDLE}`);
-        const perfil = await perfilResp.json();
-        const feedResp = await fetch(`https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${perfil.did}&limit=20`);
-        const feed = await feedResp.json();
-
-        if (!feed.feed?.length) { container.innerHTML = '<div class="estado">Nenhum post encontrado.</div>'; return; }
-
-        const cacheItems = [];
-        container.innerHTML = "";
-        feed.feed.forEach(entrada => {
-          const post  = entrada.post;
-          const titulo = post.record?.text || "";
-          const isodate = post.record?.createdAt || "";
-          const uri   = post.uri.replace("at://", "").split("/");
-          const link  = `https://bsky.app/profile/${uri[0]}/post/${uri[2]}`;
-          const data  = { titulo, link, isodate, colId };
-          cacheItems.push(data);
-          container.appendChild(criarItem(data));
-        });
-
-        document.getElementById("count-bsky").textContent = cacheItems.length;
-        salvarCache(colId, cacheItems);
-        notificarNovos(colId, cacheItems.map(i => i.link || i.titulo));
-        atualizarBadgeNaoLidos(colId);
-      } catch(e) {
-        const cache = carregarCache(colId);
-        if (cache) {
-          container.innerHTML = '';
-          mostrarAvisoCache(container, cache.ts);
-          cache.items.forEach(data => container.appendChild(criarItem({ ...data, colId })));
-          document.getElementById("count-bsky").textContent = cache.items.length;
-          atualizarBadgeNaoLidos(colId);
-          setColStatus(colId, 'cache');
-        } else {
-          container.innerHTML = '<div class="estado">Não foi possível carregar o Bluesky.</div>';
         }
         throw e;
       }
