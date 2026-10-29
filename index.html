@@ -92,8 +92,6 @@
     .chip:hover { background: var(--bg-hover); color: var(--text-main); }
     .chip.ativo { background: var(--bg-ativo); color: var(--text-main); font-weight: 600; }
     .chip .estrela { color: var(--estrela); font-size: 11px; }
-    .chip-count { font-size: 11px; font-variant-numeric: tabular-nums; }
-    .chip-count.tem-novos { color: var(--text-main); font-weight: 600; }
     .chip-status { font-size: 10px; }
     .chip-status.erro { color: #e05a4f; }
     .chip-status.cache { color: #d39b16; }
@@ -574,7 +572,7 @@
     // ==============================
     // CHIPS DE FONTES (barra superior)
     // ==============================
-    function criarChip({ id, nome, cat, count, temNovos, status }) {
+    function criarChip({ id, nome, cat, status }) {
       const btn = document.createElement('button');
       btn.className = 'chip' + (fonteAtiva === id ? ' ativo' : '') + (cat ? ` cat-${cat}` : '');
       btn.dataset.fonte = id;
@@ -584,8 +582,7 @@
       if (status === 'erro')        statusHtml = '<span class="chip-status erro" title="Erro ao carregar">✕</span>';
       else if (status === 'cache')  statusHtml = '<span class="chip-status cache" title="Sem conexão — mostrando cache">⚠</span>';
       else if (status === 'carregando') statusHtml = '<span class="chip-status carregando" title="Carregando…"></span>';
-      btn.innerHTML = `${icn}${nome}${statusHtml}`
-        + (count ? `<span class="chip-count${temNovos ? ' tem-novos' : ''}">${count}</span>` : '');
+      btn.innerHTML = `${icn}${nome}${statusHtml}`;
       return btn;
     }
 
@@ -599,15 +596,12 @@
       const nav = document.getElementById('nav');
       const scroll = nav.scrollLeft;
       nav.innerHTML = '';
-      const todos = FONTES.flatMap(f => itensPorFonte[f.id] || []);
-      const nlTudo = naoLidos(todos);
-      nav.appendChild(criarChip({ id: 'tudo', nome: 'Tudo', count: nlTudo, temNovos: nlTudo > 0 }));
-      nav.appendChild(criarChip({ id: 'favoritos', nome: 'Favoritos', count: favoritosArr.length }));
+      nav.appendChild(criarChip({ id: 'tudo', nome: 'Tudo' }));
+      nav.appendChild(criarChip({ id: 'favoritos', nome: 'Favoritos' }));
       GRUPOS.forEach(g => {
         nav.appendChild(chipSep());
         FONTES.filter(f => f.cat === g.cat).forEach(f => {
-          const nl = naoLidos(itensPorFonte[f.id] || []);
-          nav.appendChild(criarChip({ id: f.id, nome: f.nome, cat: f.cat, count: nl, temNovos: nl > 0, status: fonteStatus[f.id] }));
+          nav.appendChild(criarChip({ id: f.id, nome: f.nome, cat: f.cat, status: fonteStatus[f.id] }));
         });
       });
       nav.scrollLeft = scroll;
@@ -798,9 +792,7 @@
       document.getElementById('feed-titulo').textContent = nome;
       const nl = naoLidos(itensVisiveis);
       const total = itensVisiveis.length;
-      document.getElementById('feed-resumo').textContent = total
-        ? `${total} ${total === 1 ? 'item' : 'itens'}` + (fonteAtiva !== 'favoritos' && nl ? ` · ${nl} não ${nl === 1 ? 'lido' : 'lidos'}` : '')
-        : '';
+      document.getElementById('feed-resumo').textContent = total ? `${total} ${total === 1 ? 'item' : 'itens'}` : '';
       const acao = document.getElementById('btn-acao-feed');
       if (fonteAtiva === 'favoritos') {
         acao.textContent = favoritosArr.length ? 'Apagar todos' : '';
