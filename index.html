@@ -9,7 +9,6 @@
     :root {
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       --bg-body: #faf9f6;
-      --bg-sidebar: #f3f1ec;
       --bg-card: #ffffff;
       --bg-hover: #efece5;
       --bg-ativo: #e6e2d8;
@@ -28,12 +27,11 @@
       --item-padding-v: 14px;
       --font-size-link: 15px;
       --font-size-meta: 11.5px;
-      --sidebar-w: 236px;
+      --topo-h: 96px; /* recalculado em JS a partir da altura real da barra */
     }
 
     body.dark-theme {
       --bg-body: #221f1c;
-      --bg-sidebar: #1c1a17;
       --bg-card: #29251f;
       --bg-hover: #2e2a24;
       --bg-ativo: #383329;
@@ -60,49 +58,51 @@
     .cat-pessoal  { --cat: var(--cat-pessoal); }
     .cat-sindical { --cat: var(--cat-sindical); }
     .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cat, var(--text-muted)); flex-shrink: 0; }
+    @keyframes pulsar { 50% { opacity: 0.3; } }
+    @keyframes girar { to { transform: rotate(360deg); } }
 
-    /* ========== LAYOUT ========== */
-    .app { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh; }
-
-    /* ========== SIDEBAR ========== */
-    .sidebar { position: sticky; top: 0; height: 100vh; overflow-y: auto; background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 18px 10px 12px; }
-    .marca { padding: 0 10px 14px; }
-    .marca h1 { margin: 0; font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
-    .monitor { display: flex; align-items: center; gap: 6px; margin-top: 5px; font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+    /* ========== BARRA SUPERIOR ========== */
+    .topbar { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg-body) 90%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-color); }
+    .topbar-inner { max-width: 1240px; margin: 0 auto; padding: 10px 20px 0; }
+    .topbar-linha { display: flex; align-items: center; gap: 14px; padding-bottom: 8px; }
+    .marca { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .marca h1 { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: -0.02em; white-space: nowrap; }
+    .monitor { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
     .monitor-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; flex-shrink: 0; }
     .monitor-dot.carregando { background: #fbbf24; animation: pulsar 0.8s ease-in-out infinite; }
     .monitor-dot.erro { background: #f87171; }
-    @keyframes pulsar { 50% { opacity: 0.3; } }
 
-    .nav { display: flex; flex-direction: column; gap: 1px; }
-    .nav-grupo { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); padding: 14px 10px 5px; }
-    .nav-item { display: flex; align-items: center; gap: 9px; width: 100%; padding: 6px 10px; border: none; border-radius: 6px; background: none; color: var(--text-main); font-size: 13px; text-align: left; cursor: pointer; transition: background 0.12s; position: relative; }
-    .nav-item:hover { background: var(--bg-hover); }
-    .nav-item.ativo { background: var(--bg-ativo); font-weight: 600; }
-    .nav-item .nav-icone { width: 14px; text-align: center; font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
-    .nav-item .nav-icone.estrela { color: var(--estrela); }
-    .nav-item .dot { margin: 0 3.5px; }
-    .nav-nome { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .nav-status { font-size: 10px; }
-    .nav-status.erro { color: #e05a4f; }
-    .nav-status.cache { color: #d39b16; }
-    .nav-status.carregando { width: 5px; height: 5px; border-radius: 50%; background: var(--text-muted); animation: pulsar 0.8s ease-in-out infinite; }
-    .nav-count { font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; min-width: 18px; text-align: right; }
-    .nav-count.tem-novos { color: var(--text-main); font-weight: 600; }
-    .nav-refresh { display: none; border: none; background: none; color: var(--text-muted); font-size: 13px; cursor: pointer; padding: 0 2px; line-height: 1; }
-    .nav-refresh:hover { color: var(--accent); }
-    .nav-item:hover .nav-refresh { display: block; }
-    .nav-item:hover .nav-refresh + .nav-count { display: none; }
-
-    .sidebar-rodape { margin-top: auto; padding: 16px 4px 0; display: flex; gap: 4px; }
-    .btn-icone { height: 30px; min-width: 30px; padding: 0 9px; border: 1px solid transparent; border-radius: 6px; background: none; color: var(--text-muted); font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.12s, color 0.12s; }
+    .busca { flex: 1; min-width: 0; max-width: 460px; margin-left: auto; position: relative; }
+    .busca input { width: 100%; height: 32px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); border-radius: 8px; padding: 0 30px 0 32px; font-size: 13px; outline: none; font-family: inherit; transition: border-color 0.15s; }
+    .busca input:focus { border-color: var(--accent); }
+    .busca::before { content: "⌕"; position: absolute; left: 11px; top: 50%; transform: translateY(-52%); color: var(--text-muted); font-size: 16px; pointer-events: none; }
+    .busca kbd { position: absolute; right: 9px; top: 50%; transform: translateY(-50%); font-family: inherit; font-size: 10px; color: var(--text-muted); border: 1px solid var(--border-color); border-radius: 4px; padding: 0 5px; pointer-events: none; }
+    .busca input:focus + kbd, .busca input:not(:placeholder-shown) + kbd { display: none; }
+    .datas { display: flex; background: var(--bg-hover); border-radius: 8px; padding: 2px; flex-shrink: 0; }
+    .date-btn { border: none; background: none; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: var(--text-muted); cursor: pointer; white-space: nowrap; }
+    .date-btn.ativo { background: var(--bg-card); color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+    .acoes { display: flex; gap: 2px; flex-shrink: 0; margin-left: auto; }
+    .btn-icone { height: 30px; min-width: 30px; padding: 0 8px; border: none; border-radius: 6px; background: none; color: var(--text-muted); font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background 0.12s, color 0.12s; }
     .btn-icone:hover, .btn-icone.aberto { background: var(--bg-hover); color: var(--text-main); }
     .btn-icone.girando > span { display: inline-block; animation: girar 0.8s linear; }
-    @keyframes girar { to { transform: rotate(360deg); } }
+
+    .chips { display: flex; align-items: center; gap: 2px; overflow-x: auto; scrollbar-width: none; padding-bottom: 8px; margin: 0 -6px; }
+    .chips::-webkit-scrollbar { display: none; }
+    .chip { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; padding: 4px 10px; border: none; border-radius: 999px; background: none; color: var(--text-muted); font-size: 12.5px; white-space: nowrap; cursor: pointer; transition: background 0.12s, color 0.12s; }
+    .chip:hover { background: var(--bg-hover); color: var(--text-main); }
+    .chip.ativo { background: var(--bg-ativo); color: var(--text-main); font-weight: 600; }
+    .chip .estrela { color: var(--estrela); font-size: 11px; }
+    .chip-count { font-size: 11px; font-variant-numeric: tabular-nums; }
+    .chip-count.tem-novos { color: var(--text-main); font-weight: 600; }
+    .chip-status { font-size: 10px; }
+    .chip-status.erro { color: #e05a4f; }
+    .chip-status.cache { color: #d39b16; }
+    .chip-status.carregando { width: 5px; height: 5px; border-radius: 50%; background: var(--text-muted); animation: pulsar 0.8s ease-in-out infinite; }
+    .chip-sep { width: 1px; height: 14px; background: var(--border-color); margin: 0 6px; flex-shrink: 0; }
 
     /* ========== CONFIG POPOVER ========== */
     .config-wrap { position: relative; }
-    .config-panel { display: none; position: absolute; bottom: 38px; left: 0; width: 260px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.14); padding: 14px; z-index: 50; flex-direction: column; gap: 14px; }
+    .config-panel { display: none; position: absolute; top: 36px; right: 0; width: 260px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.14); padding: 14px; z-index: 50; flex-direction: column; gap: 14px; }
     .config-panel.aberto { display: flex; }
     .config-grupo { display: flex; flex-direction: column; gap: 6px; }
     .config-grupo > label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
@@ -117,28 +117,13 @@
     .config-reset { align-self: flex-start; font-size: 11px; color: var(--text-muted); background: none; border: none; cursor: pointer; padding: 0; }
     .config-reset:hover { color: var(--text-main); text-decoration: underline; }
 
-    /* ========== MAIN ========== */
-    .main { min-width: 0; }
-    .topbar { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg-body) 88%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-color); }
-    .topbar-inner { max-width: 800px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; gap: 10px; }
-    .btn-menu { display: none; }
-    .busca { flex: 1; min-width: 0; position: relative; }
-    .busca input { width: 100%; height: 34px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); border-radius: 8px; padding: 0 30px 0 32px; font-size: 13px; outline: none; font-family: inherit; transition: border-color 0.15s; }
-    .busca input:focus { border-color: var(--accent); }
-    .busca::before { content: "⌕"; position: absolute; left: 11px; top: 50%; transform: translateY(-52%); color: var(--text-muted); font-size: 16px; pointer-events: none; }
-    .busca kbd { position: absolute; right: 9px; top: 50%; transform: translateY(-50%); font-family: inherit; font-size: 10px; color: var(--text-muted); border: 1px solid var(--border-color); border-radius: 4px; padding: 0 5px; pointer-events: none; }
-    .busca input:focus + kbd, .busca input:not(:placeholder-shown) + kbd { display: none; }
-    .datas { display: flex; background: var(--bg-hover); border-radius: 8px; padding: 2px; flex-shrink: 0; }
-    .date-btn { border: none; background: none; border-radius: 6px; padding: 5px 10px; font-size: 12px; color: var(--text-muted); cursor: pointer; white-space: nowrap; }
-    .date-btn.ativo { background: var(--bg-card); color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-
-    .com-jornal .topbar-inner { max-width: 1180px; }
+    /* ========== CONTEÚDO ========== */
     .conteudo { max-width: 800px; margin: 0 auto; padding: 22px 20px 80px; }
-    .com-jornal .conteudo { max-width: 1180px; display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 36px; align-items: start; }
+    .com-jornal .conteudo { max-width: 1240px; display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 40px; align-items: start; }
     .feed { min-width: 0; }
 
     /* ========== JORNAL DA USP (coluna fixa) ========== */
-    .jornal { display: none; position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow-y: auto; background: var(--bg-jornal); border-top: 4px solid var(--cat-oficial); border-radius: 4px 4px 12px 12px; padding: 14px 16px 6px; }
+    .jornal { display: none; position: sticky; top: calc(var(--topo-h) + 20px); max-height: calc(100vh - var(--topo-h) - 40px); overflow-y: auto; scrollbar-width: thin; background: var(--bg-jornal); border-top: 4px solid var(--cat-oficial); border-radius: 4px 4px 12px 12px; padding: 14px 16px 6px; }
     .com-jornal .jornal { display: block; }
     .jornal-cabecalho { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding-bottom: 10px; margin-bottom: 4px; border-bottom: 2px solid var(--text-main); }
     .jornal-cabecalho h3 { margin: 0; font-family: var(--font-serif); font-size: 20px; font-weight: 700; letter-spacing: -0.01em; color: var(--cat-oficial); }
@@ -159,16 +144,17 @@
     .jornal-card:hover .btn-star { opacity: 0.55; }
     .jornal-card.destaque .btn-star { top: 18px; right: 6px; }
 
-    @media (max-width: 1180px) {
-      .com-jornal .topbar-inner { max-width: 800px; }
+    @media (max-width: 1100px) {
       .com-jornal .conteudo { max-width: 800px; display: flex; flex-direction: column; align-items: stretch; gap: 22px; }
-      .jornal { order: -1; min-width: 0; position: static; max-height: none; padding: 12px 14px 14px; }
+      .jornal { min-width: 0; position: static; max-height: none; padding: 12px 14px 14px; }
       .jornal-lista { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; padding-bottom: 4px; }
       .jornal-card, .jornal-card.destaque { flex: 0 0 210px; flex-direction: column; gap: 8px; padding: 10px 0 0; border-bottom: none; scroll-snap-align: start; }
       .jornal-card img, .jornal-card.destaque img { width: 100%; aspect-ratio: 16/10; order: 0; }
       .jornal-card a, .jornal-card.destaque a { font-size: 14px; }
       .jornal-card .btn-star, .jornal-card.destaque .btn-star { top: 16px; right: 6px; opacity: 0.55; }
     }
+
+    /* ========== TIMELINE ========== */
     .feed-cabecalho { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
     .feed-cabecalho h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
     .feed-resumo { font-size: 12px; color: var(--text-muted); flex: 1; }
@@ -178,11 +164,13 @@
     .aviso { margin: 10px 0 4px; padding: 8px 12px; border-radius: 8px; font-size: 12px; background: #fff6dc; color: #85620a; }
     body.dark-theme .aviso { background: #332a10; color: #e2bf5d; }
 
-    .dia-sep { position: sticky; top: 59px; z-index: 5; margin: 18px 0 0; padding: 8px 0 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); background: var(--bg-body); border-bottom: 1px solid var(--border-color); }
+    .dia-sep { position: sticky; top: var(--topo-h); z-index: 5; margin: 18px 0 0; padding: 8px 0 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); background: var(--bg-body); border-bottom: 1px solid var(--border-color); }
 
-    .item { display: flex; gap: 16px; align-items: flex-start; padding: var(--item-padding-v) 4px; border-bottom: 1px solid var(--border-color); position: relative; }
-    .item:last-child { border-bottom: none; }
-    .item.foco { box-shadow: inset 3px 0 0 var(--accent); padding-left: 12px; }
+    /* Filete lateral na cor da categoria: itens seguidos da mesma categoria formam uma linha contínua */
+    .item { display: flex; gap: 16px; align-items: flex-start; padding: var(--item-padding-v) 4px var(--item-padding-v) 16px; border-left: 3px solid color-mix(in srgb, var(--cat, var(--text-muted)) 60%, transparent); position: relative; transition: background 0.12s; }
+    .item::after { content: ""; position: absolute; left: 16px; right: 0; bottom: 0; border-bottom: 1px solid var(--border-color); }
+    .item:last-child::after { display: none; }
+    .item.foco { background: var(--bg-hover); }
     .item-corpo { flex: 1; min-width: 0; }
     .item-meta { display: flex; align-items: center; gap: 6px; font-size: var(--font-size-meta); color: var(--text-muted); margin-bottom: 4px; }
     .item-fonte { color: var(--cat, var(--text-muted)); font-weight: 600; background: none; border: none; padding: 0; font-size: inherit; cursor: pointer; }
@@ -191,6 +179,7 @@
     .item-titulo:hover { text-decoration: underline; }
     .item .fonte { display: inline-block; font-size: 11px; color: var(--text-muted); margin-top: 4px; margin-right: 8px; }
     .item-thumb { width: 132px; aspect-ratio: 16/10; object-fit: cover; border-radius: 6px; flex-shrink: 0; background: var(--bg-hover); }
+    .item-lido { border-left-color: color-mix(in srgb, var(--cat, var(--text-muted)) 22%, transparent); }
     .item-lido .item-titulo { color: var(--text-muted); font-weight: 500; }
     .item-lido .item-thumb { opacity: 0.6; }
     .btn-star { position: absolute; top: calc(var(--item-padding-v) - 3px); right: 0; border: none; background: none; color: var(--text-muted); font-size: 16px; line-height: 1; cursor: pointer; padding: 3px; opacity: 0; transition: opacity 0.12s, color 0.12s; }
@@ -204,22 +193,17 @@
     .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(10px); background: var(--text-main); color: var(--bg-body); padding: 8px 18px; border-radius: 6px; font-size: 12px; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s; z-index: 9999; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
     .toast.visivel { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    .backdrop { display: none; }
-
     /* ========== CELULAR ========== */
     @media (max-width: 720px) {
-      .app { grid-template-columns: 1fr; }
-      .sidebar { position: fixed; left: 0; top: 0; z-index: 100; width: 270px; transform: translateX(-100%); transition: transform 0.22s ease; }
-      body.menu-aberto .sidebar { transform: none; box-shadow: 0 0 30px rgba(0,0,0,0.2); }
-      body.menu-aberto .backdrop { display: block; position: fixed; inset: 0; z-index: 90; background: rgba(0,0,0,0.3); }
-      .btn-menu { display: inline-flex; }
-      .topbar-inner { padding: 10px 16px; gap: 8px; flex-wrap: wrap; }
-      .busca { flex-basis: calc(100% - 46px); }
+      .topbar-inner { padding: 10px 16px 0; }
+      .topbar-linha { flex-wrap: wrap; gap: 8px; }
+      #monitor-status { display: none; }
+      .busca { order: 3; flex-basis: 100%; max-width: none; margin: 0; }
       .busca kbd { display: none; }
-      .datas { width: 100%; }
+      .datas { order: 4; width: 100%; }
       .date-btn { flex: 1; }
+      .chips { margin: 0 -16px; padding: 0 10px 8px; }
       .conteudo { padding: 16px 16px 60px; }
-      .dia-sep { top: 99px; }
       .item-thumb { width: 88px; }
       .item:has(.item-thumb) .btn-star { right: 100px; }
       .btn-star { opacity: 0.4; }
@@ -227,92 +211,86 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar" id="sidebar">
-      <div class="marca">
-        <h1>Monitor USP</h1>
-        <div class="monitor">
-          <span class="monitor-dot" id="monitor-dot"></span>
-          <span id="monitor-status">Inicializando…</span>
+  <header class="topbar" id="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-linha">
+        <div class="marca">
+          <h1>Monitor USP</h1>
+          <div class="monitor">
+            <span class="monitor-dot" id="monitor-dot"></span>
+            <span id="monitor-status">Inicializando…</span>
+          </div>
         </div>
-      </div>
-      <nav class="nav" id="nav"></nav>
-      <div class="sidebar-rodape">
-        <button class="btn-icone" id="btn-refresh-all" onclick="refreshManual()" title="Atualizar tudo (R)"><span>↻</span></button>
-        <button class="btn-icone" id="theme-toggle" title="Alternar tema">◐</button>
-        <div class="config-wrap">
-          <button class="btn-icone" id="btn-config" onclick="toggleConfig()" title="Aparência">⚙</button>
-          <div class="config-panel" id="config-panel">
-            <div class="config-grupo">
-              <label>Densidade</label>
-              <div class="segmentado">
-                <button data-config="densidade" data-val="compacto" onclick="aplicarConfig(this)">Compacto</button>
-                <button data-config="densidade" data-val="normal" onclick="aplicarConfig(this)">Normal</button>
-                <button data-config="densidade" data-val="espaçoso" onclick="aplicarConfig(this)">Espaçoso</button>
+        <div class="busca">
+          <input type="text" id="campo-busca" placeholder="Buscar nos títulos…" autocomplete="off">
+          <kbd>/</kbd>
+        </div>
+        <div class="datas">
+          <button class="date-btn ativo" data-date="todos" onclick="setDateFilter(this)">Tudo</button>
+          <button class="date-btn" data-date="hoje" onclick="setDateFilter(this)">24h</button>
+          <button class="date-btn" data-date="7d" onclick="setDateFilter(this)">7 dias</button>
+          <button class="date-btn" data-date="30d" onclick="setDateFilter(this)">30 dias</button>
+        </div>
+        <div class="acoes">
+          <button class="btn-icone" id="btn-refresh-all" onclick="refreshManual()" title="Atualizar tudo (R)"><span>↻</span></button>
+          <button class="btn-icone" id="theme-toggle" title="Alternar tema">◐</button>
+          <div class="config-wrap">
+            <button class="btn-icone" id="btn-config" onclick="toggleConfig()" title="Aparência">⚙</button>
+            <div class="config-panel" id="config-panel">
+              <div class="config-grupo">
+                <label>Densidade</label>
+                <div class="segmentado">
+                  <button data-config="densidade" data-val="compacto" onclick="aplicarConfig(this)">Compacto</button>
+                  <button data-config="densidade" data-val="normal" onclick="aplicarConfig(this)">Normal</button>
+                  <button data-config="densidade" data-val="espaçoso" onclick="aplicarConfig(this)">Espaçoso</button>
+                </div>
               </div>
-            </div>
-            <div class="config-grupo">
-              <label>Fonte</label>
-              <div class="segmentado">
-                <button data-config="fonte" data-val="P" onclick="aplicarConfig(this)">P</button>
-                <button data-config="fonte" data-val="M" onclick="aplicarConfig(this)">M</button>
-                <button data-config="fonte" data-val="G" onclick="aplicarConfig(this)">G</button>
+              <div class="config-grupo">
+                <label>Fonte</label>
+                <div class="segmentado">
+                  <button data-config="fonte" data-val="P" onclick="aplicarConfig(this)">P</button>
+                  <button data-config="fonte" data-val="M" onclick="aplicarConfig(this)">M</button>
+                  <button data-config="fonte" data-val="G" onclick="aplicarConfig(this)">G</button>
+                </div>
               </div>
-            </div>
-            <div class="config-grupo">
-              <label>Cores das categorias</label>
-              <div class="cores">
-                <label class="cor-item"><input type="color" class="cor-picker" id="cor-oficial"  oninput="aoMudarCor('oficial',this.value)">Oficial</label>
-                <label class="cor-item"><input type="color" class="cor-picker" id="cor-externo"  oninput="aoMudarCor('externo',this.value)">Imprensa</label>
-                <label class="cor-item"><input type="color" class="cor-picker" id="cor-ciencia"  oninput="aoMudarCor('ciencia',this.value)">Ciência</label>
-                <label class="cor-item"><input type="color" class="cor-picker" id="cor-sindical" oninput="aoMudarCor('sindical',this.value)">Sindical</label>
-                <label class="cor-item"><input type="color" class="cor-picker" id="cor-pessoal"  oninput="aoMudarCor('pessoal',this.value)">Pessoal</label>
+              <div class="config-grupo">
+                <label>Cores das categorias</label>
+                <div class="cores">
+                  <label class="cor-item"><input type="color" class="cor-picker" id="cor-oficial"  oninput="aoMudarCor('oficial',this.value)">Oficial</label>
+                  <label class="cor-item"><input type="color" class="cor-picker" id="cor-externo"  oninput="aoMudarCor('externo',this.value)">Imprensa</label>
+                  <label class="cor-item"><input type="color" class="cor-picker" id="cor-ciencia"  oninput="aoMudarCor('ciencia',this.value)">Ciência</label>
+                  <label class="cor-item"><input type="color" class="cor-picker" id="cor-sindical" oninput="aoMudarCor('sindical',this.value)">Sindical</label>
+                  <label class="cor-item"><input type="color" class="cor-picker" id="cor-pessoal"  oninput="aoMudarCor('pessoal',this.value)">Pessoal</label>
+                </div>
               </div>
+              <button class="config-reset" onclick="resetarConfig()">↺ Restaurar padrões</button>
             </div>
-            <button class="config-reset" onclick="resetarConfig()">↺ Restaurar padrões</button>
           </div>
         </div>
       </div>
+      <nav class="chips" id="nav"></nav>
+    </div>
+  </header>
+
+  <main class="conteudo">
+    <aside class="jornal" id="jornal">
+      <div class="jornal-cabecalho">
+        <h3>Jornal da USP</h3>
+        <button class="btn-texto" onclick="selecionarFonte('col-rss')">ver todas →</button>
+      </div>
+      <div class="jornal-lista" id="jornal-lista"></div>
     </aside>
-    <div class="backdrop" onclick="toggleMenu(false)"></div>
-
-    <main class="main">
-      <div class="topbar">
-        <div class="topbar-inner">
-          <button class="btn-icone btn-menu" onclick="toggleMenu()" aria-label="Fontes">☰</button>
-          <div class="busca">
-            <input type="text" id="campo-busca" placeholder="Buscar nos títulos…" autocomplete="off">
-            <kbd>/</kbd>
-          </div>
-          <div class="datas">
-            <button class="date-btn ativo" data-date="todos" onclick="setDateFilter(this)">Tudo</button>
-            <button class="date-btn" data-date="hoje" onclick="setDateFilter(this)">24h</button>
-            <button class="date-btn" data-date="7d" onclick="setDateFilter(this)">7 dias</button>
-            <button class="date-btn" data-date="30d" onclick="setDateFilter(this)">30 dias</button>
-          </div>
-        </div>
+    <section class="feed">
+      <div class="feed-cabecalho">
+        <h2 id="feed-titulo">Tudo</h2>
+        <span class="feed-resumo" id="feed-resumo"></span>
+        <button class="btn-texto" id="btn-refresh-fonte" onclick="refreshFonte(fonteAtiva)" style="display:none">↻ Atualizar</button>
+        <button class="btn-texto" id="btn-acao-feed" onclick="acaoFeed()"></button>
       </div>
-
-      <div class="conteudo">
-        <section class="feed">
-          <div class="feed-cabecalho">
-            <h2 id="feed-titulo">Tudo</h2>
-            <span class="feed-resumo" id="feed-resumo"></span>
-            <button class="btn-texto" id="btn-acao-feed" onclick="acaoFeed()"></button>
-          </div>
-          <div id="feed-aviso"></div>
-          <div id="feed-lista"></div>
-        </section>
-        <aside class="jornal" id="jornal">
-          <div class="jornal-cabecalho">
-            <h3>Jornal da USP</h3>
-            <button class="btn-texto" onclick="selecionarFonte('col-rss')">ver todas →</button>
-          </div>
-          <div class="jornal-lista" id="jornal-lista"></div>
-        </aside>
-      </div>
-    </main>
-  </div>
+      <div id="feed-aviso"></div>
+      <div id="feed-lista"></div>
+    </section>
+  </main>
 
   <div class="toast" id="toast"></div>
 
@@ -420,7 +398,7 @@
       lidosSet.add(key);
       salvarLidos();
       if (el) el.classList.add('item-lido');
-      renderSidebar();
+      renderChips();
       atualizarCabecalho();
     }
 
@@ -428,7 +406,7 @@
       itensVisiveis.forEach(item => { const k = chaveItem(item); if (k) lidosSet.add(k); });
       salvarLidos();
       document.querySelectorAll('#feed-lista .item').forEach(el => el.classList.add('item-lido'));
-      renderSidebar();
+      renderChips();
       atualizarCabecalho();
       showToast('Marcados como lidos ✓');
     }
@@ -464,7 +442,7 @@
       document.querySelectorAll('.btn-star').forEach(btn => {
         if (btn.dataset.favKey === key) btn.classList.toggle('ativo', !removendo);
       });
-      renderSidebar();
+      renderChips();
       if (fonteAtiva === 'favoritos') renderFeed();
       showToast(removendo ? 'Removido dos favoritos' : 'Salvo nos favoritos ★');
     }
@@ -474,7 +452,7 @@
       if (!confirm(`Apagar todos os ${favoritosArr.length} favoritos salvos? Essa ação não pode ser desfeita.`)) return;
       favoritosArr = [];
       salvarFavoritos();
-      renderSidebar();
+      renderChips();
       renderFeed();
       showToast('Favoritos apagados');
     }
@@ -566,7 +544,7 @@
 
     async function carregarFonte(fonte) {
       fonteStatus[fonte.id] = 'carregando';
-      renderSidebar();
+      renderChips();
       try {
         const items = await fonte.fn();
         itensPorFonte[fonte.id] = items.map(i => ({ ...i, colId: fonte.id }));
@@ -594,57 +572,54 @@
     }
 
     // ==============================
-    // SIDEBAR
+    // CHIPS DE FONTES (barra superior)
     // ==============================
-    function navBotao({ id, nome, icone, cat, count, temNovos, status, refresh }) {
+    function criarChip({ id, nome, cat, count, temNovos, status }) {
       const btn = document.createElement('button');
-      btn.className = 'nav-item' + (fonteAtiva === id ? ' ativo' : '') + (cat ? ` cat-${cat}` : '');
+      btn.className = 'chip' + (fonteAtiva === id ? ' ativo' : '') + (cat ? ` cat-${cat}` : '');
+      btn.dataset.fonte = id;
       btn.onclick = () => selecionarFonte(id);
-      const icn = cat ? '<span class="dot"></span>' : `<span class="nav-icone${id === 'favoritos' ? ' estrela' : ''}">${icone}</span>`;
+      const icn = cat ? '<span class="dot"></span>' : id === 'favoritos' ? '<span class="estrela">★</span>' : '';
       let statusHtml = '';
-      if (status === 'erro')        statusHtml = '<span class="nav-status erro" title="Erro ao carregar">✕</span>';
-      else if (status === 'cache')  statusHtml = '<span class="nav-status cache" title="Sem conexão — mostrando cache">⚠</span>';
-      else if (status === 'carregando') statusHtml = '<span class="nav-status carregando" title="Carregando…"></span>';
-      btn.innerHTML = `${icn}<span class="nav-nome">${nome}</span>${statusHtml}`
-        + (refresh ? '<span class="nav-refresh" title="Atualizar esta fonte">↻</span>' : '')
-        + `<span class="nav-count${temNovos ? ' tem-novos' : ''}">${count || ''}</span>`;
-      if (refresh) {
-        btn.querySelector('.nav-refresh').onclick = e => { e.stopPropagation(); refreshFonte(id); };
-      }
+      if (status === 'erro')        statusHtml = '<span class="chip-status erro" title="Erro ao carregar">✕</span>';
+      else if (status === 'cache')  statusHtml = '<span class="chip-status cache" title="Sem conexão — mostrando cache">⚠</span>';
+      else if (status === 'carregando') statusHtml = '<span class="chip-status carregando" title="Carregando…"></span>';
+      btn.innerHTML = `${icn}${nome}${statusHtml}`
+        + (count ? `<span class="chip-count${temNovos ? ' tem-novos' : ''}">${count}</span>` : '');
       return btn;
     }
 
-    function renderSidebar() {
+    function chipSep() {
+      const sep = document.createElement('span');
+      sep.className = 'chip-sep';
+      return sep;
+    }
+
+    function renderChips() {
       const nav = document.getElementById('nav');
+      const scroll = nav.scrollLeft;
       nav.innerHTML = '';
       const todos = FONTES.flatMap(f => itensPorFonte[f.id] || []);
       const nlTudo = naoLidos(todos);
-      nav.appendChild(navBotao({ id: 'tudo', nome: 'Tudo', icone: '≡', count: nlTudo, temNovos: nlTudo > 0 }));
-      nav.appendChild(navBotao({ id: 'favoritos', nome: 'Favoritos', icone: '★', count: favoritosArr.length }));
+      nav.appendChild(criarChip({ id: 'tudo', nome: 'Tudo', count: nlTudo, temNovos: nlTudo > 0 }));
+      nav.appendChild(criarChip({ id: 'favoritos', nome: 'Favoritos', count: favoritosArr.length }));
       GRUPOS.forEach(g => {
-        const titulo = document.createElement('div');
-        titulo.className = 'nav-grupo';
-        titulo.textContent = g.nome;
-        nav.appendChild(titulo);
+        nav.appendChild(chipSep());
         FONTES.filter(f => f.cat === g.cat).forEach(f => {
           const nl = naoLidos(itensPorFonte[f.id] || []);
-          nav.appendChild(navBotao({ id: f.id, nome: f.nome, cat: f.cat, count: nl, temNovos: nl > 0, status: fonteStatus[f.id], refresh: true }));
+          nav.appendChild(criarChip({ id: f.id, nome: f.nome, cat: f.cat, count: nl, temNovos: nl > 0, status: fonteStatus[f.id] }));
         });
       });
+      nav.scrollLeft = scroll;
     }
 
     function selecionarFonte(id) {
       fonteAtiva = id;
-      toggleMenu(false);
-      renderSidebar();
+      renderChips();
       renderFeed();
       atualizarURL();
       window.scrollTo({ top: 0 });
-    }
-
-    function toggleMenu(forcar) {
-      const aberto = forcar === undefined ? !document.body.classList.contains('menu-aberto') : forcar;
-      document.body.classList.toggle('menu-aberto', aberto);
+      document.querySelector('.chip.ativo')?.scrollIntoView({ inline: 'nearest', block: 'nearest' });
     }
 
     // ==============================
@@ -671,7 +646,6 @@
       const meta = document.createElement('div');
       meta.className = 'item-meta';
       if (fonte) {
-        meta.insertAdjacentHTML('beforeend', '<span class="dot"></span>');
         const nomeFonte = document.createElement('button');
         nomeFonte.className = 'item-fonte';
         nomeFonte.textContent = fonte.nome;
@@ -834,6 +808,7 @@
         acao.textContent = nl ? '✓ Marcar como lidos' : '';
       }
       acao.style.display = acao.textContent ? '' : 'none';
+      document.getElementById('btn-refresh-fonte').style.display = FONTE_POR_ID[fonteAtiva] ? '' : 'none';
     }
 
     function acaoFeed() {
@@ -936,7 +911,7 @@
       proximoRefresh    = new Date(Date.now() + TEMPO_REFRESH);
       const temErro = FONTES.some(f => fonteStatus[f.id] === 'erro');
       atualizarStatusGlobal(temErro ? 'erro' : 'ok');
-      renderSidebar();
+      renderChips();
       renderFeed();
     }
 
@@ -944,7 +919,7 @@
       const fonte = FONTE_POR_ID[id];
       if (!fonte) return;
       await carregarFonte(fonte);
-      renderSidebar();
+      renderChips();
       if (fonteAtiva === 'tudo' || fonteAtiva === id) renderFeed();
     }
 
@@ -1071,7 +1046,6 @@
       if (e.key === 'Escape') {
         document.getElementById('campo-busca').blur();
         toggleConfig(false);
-        toggleMenu(false);
         limpar();
         return;
       }
@@ -1102,6 +1076,10 @@
     // ==============================
     // INICIALIZAÇÃO
     // ==============================
+    // Separadores de dia e coluna do Jornal grudam logo abaixo da barra superior, cuja altura varia (quebra de linha no celular)
+    const topbar = document.getElementById('topbar');
+    new ResizeObserver(() => document.documentElement.style.setProperty('--topo-h', topbar.offsetHeight + 'px')).observe(topbar);
+
     inicializarLidos();
     inicializarFavoritos();
     carregarLayoutConfig();
@@ -1109,7 +1087,7 @@
     if (coresSalvas) aplicarCores(coresSalvas);
     restaurarDeURL();
     preCarregarCache();
-    renderSidebar();
+    renderChips();
     renderFeed();
 
     // Pausa o refresh automático com a aba em segundo plano (economiza cota do proxy);
