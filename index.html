@@ -18,6 +18,8 @@
       --border-color: #e6e3dc;
       --accent: #0060df;
       --estrela: #e0a100;
+      --bg-jornal: #f2ece0;
+      --font-serif: Georgia, "Times New Roman", serif;
       --cat-oficial: #8a5a34;
       --cat-externo: #b4530f;
       --cat-ciencia: #6f7a37;
@@ -40,6 +42,7 @@
       --border-color: #3a362f;
       --accent: #6ea8fe;
       --estrela: #f5c04a;
+      --bg-jornal: #2b261f;
       --cat-oficial: #c9a06a;
       --cat-externo: #d9843f;
       --cat-ciencia: #a3b273;
@@ -129,7 +132,43 @@
     .date-btn { border: none; background: none; border-radius: 6px; padding: 5px 10px; font-size: 12px; color: var(--text-muted); cursor: pointer; white-space: nowrap; }
     .date-btn.ativo { background: var(--bg-card); color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
 
-    .feed { max-width: 800px; margin: 0 auto; padding: 22px 20px 80px; }
+    .com-jornal .topbar-inner { max-width: 1180px; }
+    .conteudo { max-width: 800px; margin: 0 auto; padding: 22px 20px 80px; }
+    .com-jornal .conteudo { max-width: 1180px; display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 36px; align-items: start; }
+    .feed { min-width: 0; }
+
+    /* ========== JORNAL DA USP (coluna fixa) ========== */
+    .jornal { display: none; position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow-y: auto; background: var(--bg-jornal); border-top: 4px solid var(--cat-oficial); border-radius: 4px 4px 12px 12px; padding: 14px 16px 6px; }
+    .com-jornal .jornal { display: block; }
+    .jornal-cabecalho { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding-bottom: 10px; margin-bottom: 4px; border-bottom: 2px solid var(--text-main); }
+    .jornal-cabecalho h3 { margin: 0; font-family: var(--font-serif); font-size: 20px; font-weight: 700; letter-spacing: -0.01em; color: var(--cat-oficial); }
+    .jornal-cabecalho .btn-texto { padding: 2px 4px; font-size: 11px; }
+    .jornal-card { display: flex; gap: 10px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid color-mix(in srgb, var(--cat-oficial) 22%, transparent); position: relative; }
+    .jornal-card:last-child { border-bottom: none; }
+    .jornal-card img { width: 68px; aspect-ratio: 1; object-fit: cover; border-radius: 6px; flex-shrink: 0; order: 2; }
+    .jornal-card .card-corpo { flex: 1; min-width: 0; }
+    .jornal-card a { display: block; color: var(--text-main); text-decoration: none; font-family: var(--font-serif); font-size: 14.5px; font-weight: 700; line-height: 1.3; }
+    .jornal-card a:hover { text-decoration: underline; }
+    .jornal-card time { display: block; margin-top: 5px; font-size: 11px; color: var(--text-muted); }
+    .jornal-card.destaque { flex-direction: column; gap: 10px; }
+    .jornal-card.destaque img { width: 100%; aspect-ratio: 16/10; order: 0; border-radius: 8px; }
+    .jornal-card.destaque a { font-size: 18px; }
+    .jornal-card.item-lido a { color: var(--text-muted); }
+    .jornal-card.item-lido img { opacity: 0.6; }
+    .jornal-card .btn-star { top: 10px; right: -4px; background: var(--bg-jornal); border-radius: 4px; }
+    .jornal-card:hover .btn-star { opacity: 0.55; }
+    .jornal-card.destaque .btn-star { top: 18px; right: 6px; }
+
+    @media (max-width: 1180px) {
+      .com-jornal .topbar-inner { max-width: 800px; }
+      .com-jornal .conteudo { max-width: 800px; display: flex; flex-direction: column; align-items: stretch; gap: 22px; }
+      .jornal { order: -1; min-width: 0; position: static; max-height: none; padding: 12px 14px 14px; }
+      .jornal-lista { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; padding-bottom: 4px; }
+      .jornal-card, .jornal-card.destaque { flex: 0 0 210px; flex-direction: column; gap: 8px; padding: 10px 0 0; border-bottom: none; scroll-snap-align: start; }
+      .jornal-card img, .jornal-card.destaque img { width: 100%; aspect-ratio: 16/10; order: 0; }
+      .jornal-card a, .jornal-card.destaque a { font-size: 14px; }
+      .jornal-card .btn-star, .jornal-card.destaque .btn-star { top: 16px; right: 6px; opacity: 0.55; }
+    }
     .feed-cabecalho { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
     .feed-cabecalho h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
     .feed-resumo { font-size: 12px; color: var(--text-muted); flex: 1; }
@@ -179,7 +218,7 @@
       .busca kbd { display: none; }
       .datas { width: 100%; }
       .date-btn { flex: 1; }
-      .feed { padding: 16px 16px 60px; }
+      .conteudo { padding: 16px 16px 60px; }
       .dia-sep { top: 99px; }
       .item-thumb { width: 88px; }
       .item:has(.item-thumb) .btn-star { right: 100px; }
@@ -254,15 +293,24 @@
         </div>
       </div>
 
-      <section class="feed">
-        <div class="feed-cabecalho">
-          <h2 id="feed-titulo">Tudo</h2>
-          <span class="feed-resumo" id="feed-resumo"></span>
-          <button class="btn-texto" id="btn-acao-feed" onclick="acaoFeed()"></button>
-        </div>
-        <div id="feed-aviso"></div>
-        <div id="feed-lista"></div>
-      </section>
+      <div class="conteudo">
+        <section class="feed">
+          <div class="feed-cabecalho">
+            <h2 id="feed-titulo">Tudo</h2>
+            <span class="feed-resumo" id="feed-resumo"></span>
+            <button class="btn-texto" id="btn-acao-feed" onclick="acaoFeed()"></button>
+          </div>
+          <div id="feed-aviso"></div>
+          <div id="feed-lista"></div>
+        </section>
+        <aside class="jornal" id="jornal">
+          <div class="jornal-cabecalho">
+            <h3>Jornal da USP</h3>
+            <button class="btn-texto" onclick="selecionarFonte('col-rss')">ver todas →</button>
+          </div>
+          <div class="jornal-lista" id="jornal-lista"></div>
+        </aside>
+      </div>
     </main>
   </div>
 
@@ -303,6 +351,7 @@
       { id: 'col-obitos',  nome: 'Óbitos USP',     cat: 'pessoal',  fn: () => carregarRSS(RSS_OBITOS, 30) },
     ];
     const FONTE_POR_ID = Object.fromEntries(FONTES.map(f => [f.id, f]));
+    const ID_JORNAL = 'col-rss';
 
     // ==============================
     // ESTADO GLOBAL
@@ -603,7 +652,8 @@
     // ==============================
     function itensDaFonteAtiva() {
       if (fonteAtiva === 'favoritos') return favoritosArr.map(f => ({ ...f, _ts: new Date(f.savedAt || Date.now()).getTime() }));
-      const fontes = fonteAtiva === 'tudo' ? FONTES : [FONTE_POR_ID[fonteAtiva]].filter(Boolean);
+      // No "Tudo" o Jornal da USP fica de fora: ele tem a sua coluna fixa
+      const fontes = fonteAtiva === 'tudo' ? FONTES.filter(f => f.id !== ID_JORNAL) : [FONTE_POR_ID[fonteAtiva]].filter(Boolean);
       return fontes.flatMap(f => itensPorFonte[f.id] || []).map(i => ({ ...i, _ts: tsItem(i) }));
     }
 
@@ -716,6 +766,57 @@
 
       renderAviso();
       atualizarCabecalho();
+      renderJornal();
+    }
+
+    // ==============================
+    // JORNAL DA USP — coluna fixa, independente da busca e dos filtros de data
+    // ==============================
+    function criarCardJornal(item, destaque) {
+      const key = chaveItem(item);
+      const card = document.createElement('article');
+      card.className = 'jornal-card' + (destaque ? ' destaque' : '') + (lidosSet.has(key) ? ' item-lido' : '');
+
+      if (item.imgUrl) {
+        const img = document.createElement('img');
+        img.src = item.imgUrl; img.alt = ''; img.loading = 'lazy';
+        img.onerror = () => img.remove();
+        card.appendChild(img);
+      }
+
+      const corpo = document.createElement('div');
+      corpo.className = 'card-corpo';
+      const a = document.createElement('a');
+      a.href = item.link || '#'; a.target = '_blank'; a.rel = 'noopener';
+      a.textContent = item.titulo || '(sem título)';
+      if (key) a.addEventListener('click', () => marcarLido(key, card));
+      corpo.appendChild(a);
+      const d = new Date(item.isodate);
+      if (!isNaN(d)) {
+        const quando = rotuloDia(d.getTime()) + ' · ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        corpo.insertAdjacentHTML('beforeend', `<time>${quando}</time>`);
+      }
+      card.appendChild(corpo);
+
+      const star = document.createElement('button');
+      star.className = 'btn-star' + (estaFavorito(key) ? ' ativo' : '');
+      star.dataset.favKey = key;
+      star.title = 'Favoritar';
+      star.textContent = '★';
+      star.addEventListener('click', e => { e.preventDefault(); toggleFavorito(item); });
+      card.appendChild(star);
+
+      return card;
+    }
+
+    function renderJornal() {
+      const itens = [...(itensPorFonte[ID_JORNAL] || [])].sort((a, b) => tsItem(b) - tsItem(a));
+      const visivel = fonteAtiva !== ID_JORNAL && itens.length > 0;
+      document.body.classList.toggle('com-jornal', visivel);
+      const lista = document.getElementById('jornal-lista');
+      lista.innerHTML = '';
+      if (!visivel) return;
+      itens.slice(0, 12).forEach((item, i) => lista.appendChild(criarCardJornal(item, i === 0)));
     }
 
     function atualizarCabecalho() {
